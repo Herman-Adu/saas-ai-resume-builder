@@ -3,8 +3,28 @@
 import ResumePreview from "@/components/ResumePreview";
 import { ResumeServerData } from "@/lib/types";
 import { mapToResumeValues } from "@/lib/utils";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { formatDate } from "date-fns";
 import Link from "next/link";
+import { useState, useTransition } from "react";
+import { MoreVertical, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import LoadingButton from "@/components/LoadingButton";
+import { deleteResume } from "./actions";
 
 interface ResumeItemProps {
   resume: ResumeServerData;
@@ -13,7 +33,7 @@ interface ResumeItemProps {
 export default function ResumeItem({ resume }: ResumeItemProps) {
   const wasUpdated = resume.updatedAt !== resume.createdAt;
   return (
-    <div className="group rounded-lg border border-transparent bg-secondary p-3 transition-colors hover:border-border">
+    <div className="group relative rounded-lg border border-transparent bg-secondary p-3 transition-colors hover:border-border">
       <div className="space-y-3">
         <Link
           href={`/editor?resumeId=${resume.id}`}
@@ -41,6 +61,102 @@ export default function ResumeItem({ resume }: ResumeItemProps) {
           <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-white to-transparent" />
         </Link>
       </div>
+      <MoreMenu resumeId={resume.id} />
     </div>
+  );
+}
+
+interface MoreMenuProps {
+  resumeId: string;
+}
+
+function MoreMenu({ resumeId }: MoreMenuProps) {
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+
+  return (
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute right-0.5 top-0.5 opacity-0 transition-opacity group-hover:opacity-100"
+          >
+            <MoreVertical className="size-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem
+            className="flex items-center gap-2"
+            onClick={() => setShowDeleteConfirmation(true)}
+          >
+            <Trash2 className="size-4" />
+            Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <DeleteConfirmationDialog
+        resumeId={resumeId}
+        open={showDeleteConfirmation}
+        onOpenChange={setShowDeleteConfirmation}
+      />
+    </>
+  );
+}
+
+interface DeleteConfirmationDialogProps {
+  resumeId: string;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
+
+function DeleteConfirmationDialog({
+  resumeId,
+  open,
+  onOpenChange,
+}: DeleteConfirmationDialogProps) {
+  const { toast } = useToast();
+
+  const [isPending, startTransition] = useTransition();
+
+  async function handleDelete() {
+    startTransition(async () => {
+      try {
+        await deleteResume(resumeId);
+        onOpenChange(false);
+      } catch (error) {
+        console.error(error);
+        toast({
+          variant: "destructive",
+          description: "Something went wrong. Please try again.",
+        });
+      }
+    });
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Delete resume?</DialogTitle>
+          <DialogDescription>
+            This will permanently delete this resume. This action cannot be
+            undone.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <LoadingButton
+            variant="destructive"
+            onClick={handleDelete}
+            loading={isPending}
+          >
+            Delete
+          </LoadingButton>
+          <Button variant="secondary" onClick={() => onOpenChange(false)}>
+            Cancel
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
