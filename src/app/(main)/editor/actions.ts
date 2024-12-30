@@ -1,6 +1,8 @@
 "use server";
 
+import { canCreateResume, canUseCustomizations } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
+import { getUserSubscriptionLevel } from "@/lib/subscription";
 import { resumeSchema, ResumeValues } from "@/lib/validation";
 import { auth } from "@clerk/nextjs/server";
 import { del, put } from "@vercel/blob";
@@ -23,9 +25,21 @@ export async function saveResume(values: ResumeValues) {
     throw new Error("User not authenticated");
   }
 
-  // TODO: Check resume count for non-premium users
+  // get user subscription level
+  const subscriptionLevel = await getUserSubscriptionLevel(userId);
 
-  // get resumee from daataabase
+  // Check resume count for non-premium users, dont block for updating resume, via check if its a new resume id
+  if (!id) {
+    const resumeCount = await prisma.resume.count({ where: { userId } });
+
+    if (!canCreateResume(subscriptionLevel, resumeCount)) {
+      throw new Error(
+        "Maximum resume count reached for this subscription level",
+      );
+    }
+  }
+
+  // get resume from database
   const existingResume = id
     ? await prisma.resume.findUnique({ where: { id, userId } })
     : null;
@@ -33,6 +47,18 @@ export async function saveResume(values: ResumeValues) {
   // check we have an id and no existing resume - then something is wrong
   if (id && !existingResume) {
     throw new Error("Resume not found");
+  }
+
+  // check if resume has customizations
+  const hasCustomizations =
+    (resumeValues.borderStyle &&
+      resumeValues.borderStyle !== existingResume?.borderStyle) ||
+    (resumeValues.colorHex &&
+      resumeValues.colorHex !== existingResume?.colorHex);
+
+  // check user has customizations for subscription level
+  if (hasCustomizations && !canUseCustomizations(subscriptionLevel)) {
+    throw new Error("Customizations not allowed for this subscription level");
   }
 
   // upload photo to vercel blob sttorage

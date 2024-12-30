@@ -1,5 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Circle, Square, Squircle } from "lucide-react";
+import { useSubscriptionLevel } from "../SubscriptionLevelProvider";
+import usePremiumModal from "@/hooks/usePremiumModal";
+import { canUseCustomizations } from "@/lib/permissions";
 
 export const BorderStyles = {
   SQUARE: "square",
@@ -18,7 +21,19 @@ export default function BorderStyleButton({
   borderStyle,
   onChange,
 }: BorderStyleButtonProps) {
+  // get user subscription level from the useSubscriptionLevel hook
+  const subscriptionLevel = useSubscriptionLevel();
+
+  // get preium model from the usePremiumModal hook
+  const premiumModal = usePremiumModal();
+
   function handleClick() {
+    // check the user can use customizations, if not open premium modal
+    if (!canUseCustomizations(subscriptionLevel)) {
+      premiumModal.setOpen(true);
+      return;
+    }
+
     const currentIndex = borderStyle ? borderStyles.indexOf(borderStyle) : 0;
 
     // find next element we want to select
