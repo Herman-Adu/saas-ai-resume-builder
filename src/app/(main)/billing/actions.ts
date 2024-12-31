@@ -13,23 +13,23 @@ export async function createCustomerPortalSession() {
     throw new Error("Unauthorized");
   }
 
-  // get the customerId stored in the private metadata in clerk
+  // get the users customerId stored in the private metadata in clerk
   const stripeCustomerId = user.privateMetadata.stripeCustomerId as
     | string
     | undefined;
 
-  // check we got the stripe customerId from clerk private metadata
+  // check we got the stripe customerId from clerk metadata for the user
   if (!stripeCustomerId) {
     throw new Error("Stripe customer ID not found");
   }
 
-  // create a CustomerPortalSession and redirect back to the billing page
+  // create a CustomerPortalSession and set the redirect url back to the billing page
   const session = await stripe.billingPortal.sessions.create({
     customer: stripeCustomerId,
     return_url: `${env.NEXT_PUBLIC_BASE_URL}/billing`,
   });
 
-  // check we got a session url, otherwise throww error
+  // check we got a session url, otherwise throw error
   if (!session.url) {
     throw new Error("Failed to create customer portal session");
   }

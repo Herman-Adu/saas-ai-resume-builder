@@ -1,7 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import React, { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { steps } from "./steps";
