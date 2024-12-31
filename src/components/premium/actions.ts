@@ -5,21 +5,28 @@ import stripe from "@/lib/stripe";
 import { currentUser } from "@clerk/nextjs/server";
 
 export async function createCheckoutSession(priceId: string) {
-  // get user from clerk
   const user = await currentUser();
 
-  // check we have an authorized user
   if (!user) {
     throw new Error("Unauthorized");
   }
 
-  // create a stripe hosted checkout session & add all necessary properties
+  const stripeCustomerId = user.privateMetadata.stripeCustomerId as
+    | string
+    | undefined;
+
   const session = await stripe.checkout.sessions.create({
     line_items: [{ price: priceId, quantity: 1 }],
     mode: "subscription",
     success_url: `${env.NEXT_PUBLIC_BASE_URL}/billing/success`,
     cancel_url: `${env.NEXT_PUBLIC_BASE_URL}/billing`,
-    customer_email: user.emailAddresses[0].emailAddress, // primary email of clerk user
+    customer: stripeCustomerId,
+    customer_email: stripeCustomerId
+      ? undefined
+      : user.emailAddresses[0].emailAddress,
+    metadata: {
+      userId: user.id,
+    },
     subscription_data: {
       metadata: {
         userId: user.id,

@@ -1,13 +1,13 @@
 "use client";
 
+import { env } from "@/env";
 import { useToast } from "@/hooks/use-toast";
 import usePremiumModal from "@/hooks/usePremiumModal";
 import { Check } from "lucide-react";
+import { useState } from "react";
 import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { createCheckoutSession } from "./actions";
-import { useState } from "react";
-import { env } from "@/env";
 
 const premiumFeatures = ["AI tools", "Up to 3 resumes"];
 const premiumPlusFeatures = ["Infinite resumes", "Design customizations"];
@@ -53,12 +53,14 @@ export default function PremiumModal() {
           <div className="flex">
             <div className="flex w-1/2 flex-col space-y-5">
               <h3 className="text-center text-lg font-bold">Premium</h3>
-              {premiumFeatures.map((feature) => (
-                <li key={feature} className="flex items-center gap-2">
-                  <Check className="size-4 text-green-500" />
-                  {feature}
-                </li>
-              ))}
+              <ul className="list-inside space-y-2">
+                {premiumFeatures.map((feature) => (
+                  <li key={feature} className="flex items-center gap-2">
+                    <Check className="size-4 text-green-500" />
+                    {feature}
+                  </li>
+                ))}
+              </ul>
               <Button
                 onClick={() =>
                   handlePremiumClick(
