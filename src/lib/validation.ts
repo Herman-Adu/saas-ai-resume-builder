@@ -46,10 +46,10 @@ export const workExperienceSchema = z.object({
     .optional(),
 });
 
-export type WorkExperienceValues = z.infer<typeof workExperienceSchema>;
+export type WorkExperienceValues = z.input<typeof workExperienceSchema>;
 
 export type WorkExperience = NonNullable<
-  z.infer<typeof workExperienceSchema>["workExperiences"]
+  z.input<typeof workExperienceSchema>["workExperiences"]
 >[number];
 
 export const educationSchema = z.object({

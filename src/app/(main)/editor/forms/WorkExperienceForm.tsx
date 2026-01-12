@@ -194,7 +194,8 @@ function WorkExperienceItem({
           <FormItem>
             <FormLabel>Job title</FormLabel>
             <FormControl>
-              <Input {...field} autoFocus />
+              {/* <Input {...field} autoFocus /> */}
+              {field !== undefined && <Input {...field} autoFocus />}
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -207,7 +208,8 @@ function WorkExperienceItem({
           <FormItem>
             <FormLabel>Company</FormLabel>
             <FormControl>
-              <Input {...field} />
+              {/* <Input {...field} /> */}
+              {field !== undefined && <Input {...field} />}
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -221,11 +223,19 @@ function WorkExperienceItem({
             <FormItem>
               <FormLabel>Start date</FormLabel>
               <FormControl>
-                <Input
+                {/* <Input
                   {...field}
                   type="date"
                   value={field.value?.slice(0, 10)}
-                />
+                /> */}
+                {field !== undefined && (
+                  <Input
+                    {...field}
+                    type="date"
+                    value={field.value?.slice(0, 10)}
+                    //value={field.value && field.value?.slice(0, 10)}
+                  />
+                )}
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -238,11 +248,19 @@ function WorkExperienceItem({
             <FormItem>
               <FormLabel>End date</FormLabel>
               <FormControl>
-                <Input
+                {/* <Input
                   {...field}
                   type="date"
                   value={field.value?.slice(0, 10)}
-                />
+                /> */}
+                {field !== undefined && (
+                  <Input
+                    {...field}
+                    type="date"
+                    value={field.value?.slice(0, 10)}
+                    //value={field.value && field.value?.slice(0, 10)}
+                  />
+                )}
               </FormControl>
               <FormMessage />
             </FormItem>
