@@ -8,6 +8,19 @@ import { auth } from "@clerk/nextjs/server";
 import { del, put } from "@vercel/blob";
 import path from "path";
 
+async function deletePhotoIfUnused(photoUrl: string, excludeResumeId?: string) {
+  const usageCount = await prisma.resume.count({
+    where: {
+      photoUrl,
+      ...(excludeResumeId ? { id: { not: excludeResumeId } } : {}),
+    },
+  });
+
+  if (usageCount === 0) {
+    await del(photoUrl);
+  }
+}
+
 export async function saveResume(values: ResumeValues) {
   const { id } = values;
 
@@ -65,11 +78,6 @@ export async function saveResume(values: ResumeValues) {
   let newPhotoUrl: string | undefined | null = undefined;
 
   if (photo instanceof File) {
-    // check for existing photo - and delete if one exsist
-    if (existingResume?.photoUrl) {
-      await del(existingResume.photoUrl);
-    }
-
     // upload file to blob with a unique path to avoid collisions
     const uniqueName = `${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;
     const blob = await put(`resume_photos/${uniqueName}${path.extname(photo.name)}`, photo, {
@@ -81,10 +89,12 @@ export async function saveResume(values: ResumeValues) {
     // photo is already a URL string from a previous resume — reuse it as-is
     newPhotoUrl = photo;
   } else if (photo === null) {
-    if (existingResume?.photoUrl) {
-      await del(existingResume.photoUrl);
-    }
     newPhotoUrl = null;
+  }
+
+  // If the old photo URL is being replaced or removed and no longer referenced, clean it up
+  if (existingResume?.photoUrl && existingResume.photoUrl !== newPhotoUrl) {
+    await deletePhotoIfUnused(existingResume.photoUrl, id ?? undefined);
   }
 
   if (id) {
