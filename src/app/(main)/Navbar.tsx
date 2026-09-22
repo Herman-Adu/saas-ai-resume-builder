@@ -30,6 +30,7 @@ export default function Navbar() {
         <div className="flex items-center gap-3">
           <ThemeToggle />
           <UserButton
+            afterSignOutUrl="/sign-in"
             appearance={{
               baseTheme: theme === "dark" ? dark : undefined,
               elements: {
