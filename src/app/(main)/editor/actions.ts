@@ -65,19 +65,21 @@ export async function saveResume(values: ResumeValues) {
   let newPhotoUrl: string | undefined | null = undefined;
 
   if (photo instanceof File) {
-    // upload file to blob storage
-
     // check for existing photo - and delete if one exsist
     if (existingResume?.photoUrl) {
       await del(existingResume.photoUrl);
     }
 
-    // upload file to blob
-    const blob = await put(`resume_photos/${path.extname(photo.name)}`, photo, {
+    // upload file to blob with a unique path to avoid collisions
+    const uniqueName = `${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;
+    const blob = await put(`resume_photos/${uniqueName}${path.extname(photo.name)}`, photo, {
       access: "public",
     });
 
     newPhotoUrl = blob.url;
+  } else if (typeof photo === "string") {
+    // photo is already a URL string from a previous resume — reuse it as-is
+    newPhotoUrl = photo;
   } else if (photo === null) {
     if (existingResume?.photoUrl) {
       await del(existingResume.photoUrl);
