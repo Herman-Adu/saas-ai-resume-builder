@@ -161,6 +161,11 @@ function EducationItem({ id, form, index, remove }: EducationItemProps) {
     isDragging,
   } = useSortable({ id });
 
+  // @dnd-kit auto-increments an internal counter for aria-describedby, causing
+  // a different ID between server and client → hydration mismatch.  Destructure
+  // it out so the client render matches the server.
+  const { "aria-describedby": _ariaDesc, ...safeAttributes } = attributes;
+
   return (
     <div
       className={cn(
@@ -177,7 +182,7 @@ function EducationItem({ id, form, index, remove }: EducationItemProps) {
         <span className="font-semibold">Education {index + 1}</span>
         <GripHorizontal
           className="size-5 cursor-grab text-muted-foreground focus:outline-none"
-          {...attributes}
+          {...safeAttributes}
           {...listeners}
         />
       </div>
