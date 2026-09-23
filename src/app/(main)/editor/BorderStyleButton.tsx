@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Circle, Square, Squircle } from "lucide-react";
 import { useSubscriptionLevel } from "../SubscriptionLevelProvider";

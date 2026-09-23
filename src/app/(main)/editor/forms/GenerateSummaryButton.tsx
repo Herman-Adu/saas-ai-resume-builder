@@ -1,3 +1,5 @@
+"use client";
+
 import LoadingButton from "@/components/LoadingButton";
 import { useToast } from "@/hooks/use-toast";
 import { ResumeValues } from "@/lib/validation";
