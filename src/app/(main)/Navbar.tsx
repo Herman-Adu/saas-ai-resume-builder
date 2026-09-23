@@ -8,9 +8,18 @@ import { CreditCard } from "lucide-react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export default function Navbar() {
-  const { theme } = useTheme();
+  const { theme, resolvedTheme } = useTheme();
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // Only apply Clerk dark theme after hydration to prevent mismatch
+  const clerkTheme = isMounted && (theme === "dark" || resolvedTheme === "dark") ? dark : undefined;
 
   return (
     <header className="shadow-sm">
@@ -32,7 +41,7 @@ export default function Navbar() {
           <UserButton
             afterSignOutUrl="/sign-in"
             appearance={{
-              baseTheme: theme === "dark" ? dark : undefined,
+              baseTheme: clerkTheme,
               elements: {
                 avatarBox: {
                   width: 35,
