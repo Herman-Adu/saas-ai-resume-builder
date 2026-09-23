@@ -45,7 +45,14 @@ export default function EducationForm({
   const form = useForm<EducationValues>({
     resolver: zodResolver(educationSchema),
     defaultValues: {
-      educations: resumeData.educations || [],
+      // Default every field to "" so inputs stay controlled even when the
+      // loaded education has missing/undefined fields
+      educations: (resumeData.educations || []).map((edu) => ({
+        degree: edu?.degree || "",
+        school: edu?.school || "",
+        startDate: edu?.startDate || "",
+        endDate: edu?.endDate || "",
+      })),
     },
   });
 

@@ -46,7 +46,15 @@ export default function WorkExperienceForm({
   const form = useForm<WorkExperienceValues>({
     resolver: zodResolver(workExperienceSchema),
     defaultValues: {
-      workExperiences: resumeData.workExperiences || [],
+      // Default every field to "" so inputs stay controlled even when the
+      // loaded work experience has missing/undefined fields
+      workExperiences: (resumeData.workExperiences || []).map((exp) => ({
+        position: exp?.position || "",
+        company: exp?.company || "",
+        startDate: exp?.startDate || "",
+        endDate: exp?.endDate || "",
+        description: exp?.description || "",
+      })),
     },
   });
 
