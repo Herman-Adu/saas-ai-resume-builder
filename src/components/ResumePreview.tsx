@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { ResumeValues } from "@/lib/validation";
 import { formatDate } from "date-fns";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { Badge } from "./ui/badge";
 import { BorderStyles } from "@/app/(main)/editor/BorderStyleButton";
 
@@ -69,14 +69,19 @@ function PersonalInfoHeader({ resumeData }: ResumeSectionProps) {
     borderStyle,
   } = resumeData;
 
-  const [photoSrc, setPhotoSrc] = useState(photo instanceof File ? "" : photo);
-
-  useEffect(() => {
-    const objectUrl = photo instanceof File ? URL.createObjectURL(photo) : "";
-    if (objectUrl) setPhotoSrc(objectUrl);
-    if (photo === null) setPhotoSrc("");
-    return () => URL.revokeObjectURL(objectUrl);
+  // Derive photoSrc from photo prop; avoid setState-in-effect anti-pattern
+  const photoSrc = useMemo(() => {
+    if (photo instanceof File) return URL.createObjectURL(photo);
+    if (photo === null) return "";
+    return photo;
   }, [photo]);
+
+  // Revoke blob URLs on cleanup to avoid memory leaks
+  useEffect(() => {
+    const url = photoSrc;
+    if (!url || !url.startsWith("blob:")) return;
+    return () => URL.revokeObjectURL(url);
+  }, [photoSrc]);
 
   return (
     <div className="flex items-center gap-6">

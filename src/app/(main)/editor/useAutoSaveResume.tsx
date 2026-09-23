@@ -2,10 +2,13 @@ import { useToast } from "@/hooks/use-toast";
 import useDebounce from "@/hooks/useDebounce";
 import { ResumeValues } from "@/lib/validation";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { saveResume } from "./actions";
 import { Button } from "@/components/ui/button";
 import { fileReplacer } from "@/lib/utils";
+
+// Debounce period before retrying a failed save
+const ERROR_RETRY_MS = 5000;
 
 export default function useAutoSaveResume(resumeData: ResumeValues) {
   const searchParams = useSearchParams();
@@ -23,18 +26,15 @@ export default function useAutoSaveResume(resumeData: ResumeValues) {
   );
 
   const [isSaving, setIsSaving] = useState(false);
-  const [isError, setIsError] = useState(false);
 
-  useEffect(() => {
-    setIsError(false);
-  }, [debouncedResumeData]);
+  // Track last error time with a ref to avoid setState-in-effect anti-pattern
+  const lastErrorTime = useRef(0);
 
   // trigger the save
   useEffect(() => {
     async function save() {
       try {
         setIsSaving(true);
-        setIsError(false);
 
         //  create a const new data and assign it to a structured clone of the debounced resume data
         const newData = structuredClone(debouncedResumeData);
@@ -63,7 +63,7 @@ export default function useAutoSaveResume(resumeData: ResumeValues) {
           );
         }
       } catch (error) {
-        setIsError(true);
+        lastErrorTime.current = Date.now();
         console.error(error);
 
         const { dismiss } = toast({
@@ -74,6 +74,7 @@ export default function useAutoSaveResume(resumeData: ResumeValues) {
               <Button
                 variant="secondary"
                 onClick={() => {
+                  lastErrorTime.current = 0;
                   dismiss();
                   save();
                 }}
@@ -88,25 +89,20 @@ export default function useAutoSaveResume(resumeData: ResumeValues) {
       }
     }
 
-    /* console.log(
-      "debouncedResumeData",
-      JSON.stringify(debouncedResumeData, fileReplacer),
-    ); */
-
-    //console.log("lastSavedData", JSON.stringify(lastSavedData, fileReplacer));
-
     const hasUnsavedChanges =
       JSON.stringify(debouncedResumeData, fileReplacer) !==
       JSON.stringify(lastSavedData, fileReplacer);
 
-    if (hasUnsavedChanges && debouncedResumeData && !isSaving && !isError) {
+    const canRetry =
+      Date.now() - lastErrorTime.current > ERROR_RETRY_MS;
+
+    if (hasUnsavedChanges && debouncedResumeData && !isSaving && canRetry) {
       save();
     }
   }, [
     debouncedResumeData,
     isSaving,
     lastSavedData,
-    isError,
     resumeId,
     searchParams,
     toast,
