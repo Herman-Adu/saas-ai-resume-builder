@@ -14,6 +14,10 @@
     "test": "vitest run --config qa/config/vitest.config.mts",
     "test:watch": "vitest --config qa/config/vitest.config.mts",
     "test:unit": "vitest run --config qa/config/vitest.config.mts qa/unit",
+    "test:e2e": "playwright test --config qa/config/playwright.config.ts",
+    "test:smoke": "playwright test --config qa/config/playwright.config.ts qa/e2e/smoke",
+    "test:seo": "playwright test --config qa/config/playwright.config.ts qa/e2e/seo",
+    "test:axe": "playwright test --config qa/config/playwright.config.ts qa/e2e/axe",
     "check": "npm run typecheck && npm run lint && npm run test",
     "postinstall": "prisma generate"
   },
@@ -55,8 +59,10 @@
     "zustand": "^5.0.15"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
     "@eslint/eslintrc": "^3.3.7",
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.64.0",
     "@tailwindcss/typography": "^0.5.15",
     "@types/node": "^20",
     "@types/react": "19.3.0",
