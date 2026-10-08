@@ -1,6 +1,7 @@
 import { env } from "@/env";
 import prisma from "@/lib/prisma";
 import stripe from "@/lib/stripe";
+import { getPeriodEnd } from "@/lib/subscription-period";
 import { NextRequest } from "next/server";
 import Stripe from "stripe";
 
@@ -61,16 +62,12 @@ async function handleSubscriptionCreatedOrUpdated(subscriptionId: string) {
         stripeSubscriptionId: subscription.id,
         stripeCustomerId: subscription.customer as string,
         stripePriceId: subscription.items.data[0].price.id,
-        stripeCurrentPeriodEnd: new Date(
-          subscription.current_period_end * 1000,
-        ),
+        stripeCurrentPeriodEnd: getPeriodEnd(subscription),
         stripeCancelAtPeriodEnd: subscription.cancel_at_period_end,
       },
       update: {
         stripePriceId: subscription.items.data[0].price.id,
-        stripeCurrentPeriodEnd: new Date(
-          subscription.current_period_end * 1000,
-        ),
+        stripeCurrentPeriodEnd: getPeriodEnd(subscription),
         stripeCancelAtPeriodEnd: subscription.cancel_at_period_end,
       },
     });
