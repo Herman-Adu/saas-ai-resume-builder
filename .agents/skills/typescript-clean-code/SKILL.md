@@ -14,6 +14,7 @@ description: TypeScript and clean-code rules for this repo - no any (parse with 
   ```
 - Prefer `satisfies` to `as`. A cast needs a comment saying why it's safe.
 - Use the generated Prisma types for rows; map them to domain types in the slice's `mappers.ts`.
+- A pure function that reads environment variables takes `Readonly<Record<string, string | undefined>>`, not an object type of optional keys: `process.env` shares no keys with that type, so TypeScript rejects it (S11c). Passing the env in also makes the function testable.
 - Exhaustive `switch` on a union, ending with `const _never: never = value`.
 
 ## Immutability

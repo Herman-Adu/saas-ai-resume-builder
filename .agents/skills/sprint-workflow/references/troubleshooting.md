@@ -41,5 +41,11 @@ The v0 GitHub app lacks the `workflows` permission. The user accepts it in GitHu
 ## `npm run build` fails with "Invalid environment variables" for `/robots.txt`
 `next build` does not read `.env.development.local`, so `src/env.ts` rejects the empty env. Load the project env for that one command and never print it: `set -a && source /vercel/share/.env.project && set +a && npm run build`.
 
+## Reproducing the CI `app` job locally (production build, signed-in tests)
+Dev mode hides production-only behaviour (auth rate limits, trusted origins). Port 3000 belongs to the preview, so use 3100. Run the steps one at a time, never build and start in one command (the server starts before `.next/BUILD_ID` exists and never answers, as in S11b): load the env (`set -a && source /vercel/share/.env.project && set +a`), `export NEXT_PUBLIC_BASE_URL=http://localhost:3100 E2E_DISABLE_RATE_LIMIT=true`, `unset VERCEL`, `npm run build`, then `npx next start -p 3100` in the background, then `E2E_BASE_URL=http://localhost:3100 npm run test:authed`. Afterwards stop the server and `pkill -f "next start -p 3100"`.
+
+## `gh pr checks --watch` is cut off after two minutes
+The tool timeout ends the call and the CI run is fine. Poll instead: `for i in $(seq 1 20); do gh pr checks <n> | awk '$1=="app"{print $2}'; sleep 10; done`, then read the `app` log (migrations line, build, test counts) before merging.
+
 ## A reload test loses data that was just typed
 Autosave is debounced, and a fixed `page.waitForTimeout` can end before the save lands (a cold dev compile makes it slower). Wait for the save request itself with `page.waitForResponse` (POST to `/editor`), then reload.
