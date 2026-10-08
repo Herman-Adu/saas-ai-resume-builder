@@ -23,6 +23,9 @@ The client is generated into `/generated` (git-ignored) by `postinstall`. Run `n
 ## Port 3000 busy when the browser tests start
 The v0 preview dev server already owns it. Point Playwright at the running server (`reuseExistingServer`) instead of starting a second one. If it still can't run, stop and report it; never push unchecked.
 
+## Signed-in test: server action returns 500, `Cannot read properties of undefined (reading 'count')`
+The long-running dev server loaded the Prisma client before `prisma generate` ran for a new model, so `prisma.<model>` is undefined there. Unit tests mock Prisma and won't show it. After any schema change, run `npx prisma generate`, then restart `next dev` (`pkill -f "next dev"`; Playwright starts a fresh one) before the browser tests. To see why a server action failed, unzip the failing test's `trace.zip` and read the POST response body in `resources/`; the dev log file doesn't capture it.
+
 ## Vitest can't resolve `@/...`
 `vitest` ran without `--config qa/config/vitest.config.mts`. Use the `npm run test:*` scripts.
 

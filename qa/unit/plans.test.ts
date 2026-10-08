@@ -49,6 +49,12 @@ describe("planFeatures", () => {
     expect(byId("pro").join(" ")).toMatch(/AI/);
   });
 
+  it("only promises CV import from pro up, because it runs the AI", () => {
+    expect(byId("free").join(" ")).not.toMatch(/import/i);
+    expect(byId("pro").join(" ")).toMatch(/import your CV/i);
+    expect(byId("pro_plus").join(" ")).toMatch(/import your CV/i);
+  });
+
   it("only promises design customisation on pro_plus", () => {
     expect(byId("pro").join(" ")).not.toMatch(/customis/i);
     expect(byId("pro_plus").join(" ")).toMatch(/customis/i);

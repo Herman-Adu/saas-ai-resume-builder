@@ -84,6 +84,7 @@ async function deleteUsersWhere(condition: string, params: unknown[]): Promise<v
   const ids = `SELECT id FROM "user" WHERE ${condition}`;
 
   await db.query(`DELETE FROM resumes WHERE "userId" IN (${ids})`, params);
+  await db.query(`DELETE FROM cv_imports WHERE "userId" IN (${ids})`, params);
   await db.query(`DELETE FROM user_subscriptions WHERE "userId" IN (${ids})`, params);
   await db.query(`DELETE FROM "user" WHERE ${condition}`, params);
 }
