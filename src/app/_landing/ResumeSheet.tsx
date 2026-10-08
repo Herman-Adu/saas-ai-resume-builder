@@ -4,7 +4,7 @@ export default function ResumeSheet() {
   return (
     <div
       aria-hidden="true"
-      className="relative aspect-[210/297] w-full overflow-hidden rounded-sm bg-paper p-[6%] text-paper-foreground shadow-2xl shadow-black/40 ring-1 ring-black/10"
+      className="relative aspect-210/297 w-full overflow-hidden rounded-sm bg-paper p-[6%] text-paper-foreground shadow-2xl shadow-black/40 ring-1 ring-black/10"
     >
       <div className="flex items-baseline justify-between gap-4 border-b-2 border-primary pb-[3%]">
         <div>

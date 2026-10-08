@@ -44,7 +44,7 @@ export default function Faq() {
       <div className="mt-10 border-t">
         {questions.map(({ question, answer }) => (
           <details key={question} className="group border-b">
-            <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-5 text-lg font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-5 text-lg font-medium focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
               {question}
               <Plus
                 className="size-5 shrink-0 text-brand transition-transform group-open:rotate-45"

@@ -15,7 +15,7 @@ export default function AuthCard({
 }: AuthCardProps) {
   return (
     <main className="flex min-h-screen items-center justify-center p-3">
-      <div className="w-full max-w-sm space-y-6 rounded-xl border bg-card p-6 text-card-foreground shadow-sm">
+      <div className="w-full max-w-sm space-y-6 rounded-xl border bg-card p-6 text-card-foreground shadow-xs">
         <div className="space-y-1">
           <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
           <p className="text-sm text-muted-foreground">{description}</p>

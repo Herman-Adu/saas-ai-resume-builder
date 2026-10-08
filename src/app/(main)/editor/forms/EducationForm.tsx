@@ -181,7 +181,7 @@ function EducationItem({ id, form, index, remove }: EducationItemProps) {
       <div className="flex justify-between gap-2">
         <span className="font-semibold">Education {index + 1}</span>
         <GripHorizontal
-          className="size-5 cursor-grab text-muted-foreground focus:outline-none"
+          className="size-5 cursor-grab text-muted-foreground focus:outline-hidden"
           {...safeAttributes}
           {...listeners}
         />
