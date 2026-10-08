@@ -1,4 +1,5 @@
 import { SubscriptionLevel } from "./subscription";
+import { defaultTemplate, type ResumeTemplate } from "./templates";
 
 export function canCreateResume(
   subscriptionLevel: SubscriptionLevel,
@@ -56,6 +57,14 @@ export function canImportCvToday(importsInLastDay: number) {
 
 export function cvImportWindowStart(now: Date = new Date()) {
   return new Date(now.getTime() - 24 * 60 * 60 * 1000);
+}
+
+// Classic is free for everyone; the other templates need a paid plan.
+export function canUseTemplate(
+  subscriptionLevel: SubscriptionLevel,
+  template: ResumeTemplate,
+) {
+  return template === defaultTemplate || subscriptionLevel !== "free";
 }
 
 // only pro plus members can use customizations

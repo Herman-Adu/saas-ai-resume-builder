@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { parseStoredBullets } from "./bullets";
+import { parseTemplate } from "./templates";
 import { ResumeServerData } from "./types";
 import {
   hideableSections,
@@ -89,6 +90,7 @@ export function mapToResumeValues(data: ResumeServerData): ResumeValues {
     skills: data.skills,
     borderStyle: data.borderStyle,
     colorHex: data.colorHex,
+    template: parseTemplate(data.template),
     summary: data.summary || undefined,
     hiddenSections: parseHiddenSections(data.hiddenSections),
   };

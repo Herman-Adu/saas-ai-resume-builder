@@ -1,6 +1,6 @@
 # Resume editor and templates: proposed plan
 
-Status: **confirmed. S7, S8, S10 (PDF import) and S11 (links, certifications, languages and projects in the editor and preview) are built; S12 (Templates) is next.**
+Status: **confirmed. S7, S8, S10 (PDF import), S11 (links, certifications, languages and projects in the editor and preview) and S12 (four templates with plan gating) are built. This plan is complete.**
 Terms are defined in `GLOSSARY.md`. Decisions are recorded in `docs/adr/`.
 
 ## Settled in round 1 (your answers)
