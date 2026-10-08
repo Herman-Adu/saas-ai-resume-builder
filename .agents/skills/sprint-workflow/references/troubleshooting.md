@@ -47,5 +47,8 @@ Dev mode hides production-only behaviour (auth rate limits, trusted origins). Po
 ## `gh pr checks --watch` is cut off after two minutes
 The tool timeout ends the call and the CI run is fine. Poll instead: `for i in $(seq 1 20); do gh pr checks <n> | awk '$1=="app"{print $2}'; sleep 10; done`, then read the `app` log (migrations line, build, test counts) before merging.
 
+## `gh` says "To get started with GitHub CLI, please run: gh auth login"
+`gh` worked earlier in the same session but a later call has no token (seen in S12 on `gh pr checks`). It is not a real logout: rerun the same command with the Bash tool's `networkProviders: ["github"]` so the sandbox supplies the credentials. Never ask the user to log in.
+
 ## A reload test loses data that was just typed
 Autosave is debounced, and a fixed `page.waitForTimeout` can end before the save lands (a cold dev compile makes it slower). Wait for the save request itself with `page.waitForResponse` (POST to `/editor`), then reload.
