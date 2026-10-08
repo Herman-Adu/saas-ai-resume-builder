@@ -1,5 +1,6 @@
 "use server";
 
+import { bulletsToText, splitBulletLines } from "@/lib/bullets";
 import openai from "@/lib/openai";
 import { canUseAITools } from "@/lib/permissions";
 import { getUserSubscriptionLevel } from "@/lib/subscription";
@@ -45,19 +46,21 @@ export async function generateSummary(input: GenerateSummaryInput) {
 
     Work experience:
     ${workExperiences
-      ?.map(
+      ?.filter((exp) => !exp.hidden)
+      .map(
         (exp) => `
         Position: ${exp.position || "N/A"} at ${exp.company || "N/A"} from ${exp.startDate || "N/A"} to ${exp.endDate || "Present"}
 
-        Description:
-        ${exp.description || "N/A"}
+        Achievements:
+        ${bulletsToText(exp.bullets) || "N/A"}
         `,
       )
       .join("\n\n")}
 
     Education:
     ${educations
-      ?.map(
+      ?.filter((edu) => !edu.hidden)
+      .map(
         (edu) => `
         Degree: ${edu.degree || "N/A"} at ${edu.school || "N/A"} from ${edu.startDate || "N/A"} to ${edu.endDate || "N/A"}
         `,
@@ -167,7 +170,10 @@ export async function generateWorkExperience(
   return {
     position: aiResponse.match(/Job title: (.*)/)?.[1] || "",
     company: aiResponse.match(/Company: (.*)/)?.[1] || "",
-    description: (aiResponse.match(/Description:([\s\S]*)/)?.[1] || "").trim(),
+    bullets: splitBulletLines(
+      aiResponse.match(/Description:([\s\S]*)/)?.[1] || "",
+    ).map((text) => ({ text, hidden: false })),
+    hidden: false,
     startDate: aiResponse.match(/Start date: (\d{4}-\d{2}-\d{2})/)?.[1],
     endDate: aiResponse.match(/End date: (\d{4}-\d{2}-\d{2})/)?.[1],
   } satisfies WorkExperience;

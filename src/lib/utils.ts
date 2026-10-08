@@ -1,7 +1,12 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { parseStoredBullets } from "./bullets";
 import { ResumeServerData } from "./types";
 import { ResumeValues } from "./validation";
+
+function toDateInput(date: Date | null) {
+  return date?.toISOString().split("T")[0];
+}
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -34,15 +39,42 @@ export function mapToResumeValues(data: ResumeServerData): ResumeValues {
     workExperiences: data.workExperiences.map((exp) => ({
       position: exp.position || undefined,
       company: exp.company || undefined,
-      startDate: exp.startDate?.toISOString().split("T")[0],
-      endDate: exp.endDate?.toISOString().split("T")[0],
-      description: exp.description || undefined,
+      startDate: toDateInput(exp.startDate),
+      endDate: toDateInput(exp.endDate),
+      bullets: parseStoredBullets(exp.bullets),
+      hidden: exp.hidden,
     })),
     educations: data.educations.map((edu) => ({
       degree: edu.degree || undefined,
       school: edu.school || undefined,
-      startDate: edu.startDate?.toISOString().split("T")[0],
-      endDate: edu.endDate?.toISOString().split("T")[0],
+      startDate: toDateInput(edu.startDate),
+      endDate: toDateInput(edu.endDate),
+      hidden: edu.hidden,
+    })),
+    links: data.links.map((link) => ({
+      label: link.label || undefined,
+      url: link.url || undefined,
+      hidden: link.hidden,
+    })),
+    certifications: data.certifications.map((cert) => ({
+      name: cert.name || undefined,
+      issuer: cert.issuer || undefined,
+      issuedDate: toDateInput(cert.issuedDate),
+      url: cert.url || undefined,
+      hidden: cert.hidden,
+    })),
+    languages: data.languages.map((language) => ({
+      name: language.name || undefined,
+      level: language.level || undefined,
+      hidden: language.hidden,
+    })),
+    projects: data.projects.map((project) => ({
+      name: project.name || undefined,
+      url: project.url || undefined,
+      startDate: toDateInput(project.startDate),
+      endDate: toDateInput(project.endDate),
+      bullets: parseStoredBullets(project.bullets),
+      hidden: project.hidden,
     })),
     skills: data.skills,
     borderStyle: data.borderStyle,

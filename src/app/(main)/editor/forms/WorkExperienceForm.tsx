@@ -13,11 +13,20 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { EditorFormProps } from "@/lib/types";
-import { workExperienceSchema, WorkExperienceValues } from "@/lib/validation";
+import {
+  WorkExperience,
+  workExperienceSchema,
+  WorkExperienceValues,
+} from "@/lib/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { GripHorizontal } from "lucide-react";
+import { Eye, EyeOff, GripHorizontal, Plus, Trash2 } from "lucide-react";
 import { useEffect } from "react";
-import { useFieldArray, useForm, UseFormReturn } from "react-hook-form";
+import {
+  useFieldArray,
+  useForm,
+  UseFormReturn,
+  useWatch,
+} from "react-hook-form";
 import {
   closestCenter,
   DndContext,
@@ -53,7 +62,11 @@ export default function WorkExperienceForm({
         company: exp?.company || "",
         startDate: exp?.startDate || "",
         endDate: exp?.endDate || "",
-        description: exp?.description || "",
+        bullets: (exp?.bullets ?? []).map((bullet) => ({
+          text: bullet.text,
+          hidden: bullet.hidden,
+        })),
+        hidden: exp?.hidden ?? false,
       })),
     },
   });
@@ -66,8 +79,15 @@ export default function WorkExperienceForm({
       // update resume data
       setResumeData({
         ...resumeData,
-        workExperiences:
-          values.workExperiences?.filter((exp) => exp !== undefined) || [],
+        workExperiences: (values.workExperiences ?? [])
+          .filter((exp) => exp !== undefined)
+          .map((exp) => ({
+            ...exp,
+            bullets: (exp.bullets ?? []).map((bullet) => ({
+              text: bullet?.text ?? "",
+              hidden: bullet?.hidden ?? false,
+            })),
+          })),
       });
     });
     return unsubscribe;
@@ -136,7 +156,8 @@ export default function WorkExperienceForm({
                   company: "",
                   startDate: "",
                   endDate: "",
-                  description: "",
+                  bullets: [],
+                  hidden: false,
                 })
               }
             >
@@ -145,6 +166,74 @@ export default function WorkExperienceForm({
           </div>
         </form>
       </Form>
+    </div>
+  );
+}
+
+interface BulletRowProps {
+  form: UseFormReturn<WorkExperienceValues>;
+  index: number;
+  bulletIndex: number;
+  onRemove: () => void;
+}
+
+function BulletRow({ form, index, bulletIndex, onRemove }: BulletRowProps) {
+  const path = `workExperiences.${index}.bullets.${bulletIndex}` as const;
+  const bulletHidden = useWatch({
+    control: form.control,
+    name: `${path}.hidden`,
+  });
+
+  return (
+    <div className="flex items-start gap-1">
+      <FormField
+        control={form.control}
+        name={`${path}.text`}
+        render={({ field }) => (
+          <FormItem className="flex-1">
+            <FormLabel className="sr-only">Bullet {bulletIndex + 1}</FormLabel>
+            <FormControl>
+              <Textarea
+                {...field}
+                rows={2}
+                className={cn(
+                  bulletHidden && "text-muted-foreground line-through",
+                )}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        aria-pressed={Boolean(bulletHidden)}
+        aria-label={
+          bulletHidden
+            ? `Show bullet ${bulletIndex + 1}`
+            : `Hide bullet ${bulletIndex + 1}`
+        }
+        onClick={() =>
+          form.setValue(`${path}.hidden`, !bulletHidden, { shouldDirty: true })
+        }
+      >
+        {bulletHidden ? (
+          <EyeOff className="size-4" />
+        ) : (
+          <Eye className="size-4" />
+        )}
+      </Button>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        aria-label={`Remove bullet ${bulletIndex + 1}`}
+        onClick={onRemove}
+      >
+        <Trash2 className="size-4" />
+      </Button>
     </div>
   );
 }
@@ -175,11 +264,36 @@ function WorkExperienceItem({
   // a different ID between server and client → hydration mismatch.  Destructure
   // it out so the client render matches the server.
   const { "aria-describedby": _ariaDesc, ...safeAttributes } = attributes;
+
+  const entryHidden = useWatch({
+    control: form.control,
+    name: `workExperiences.${index}.hidden`,
+  });
+  const {
+    fields: bulletFields,
+    append: appendBullet,
+    remove: removeBullet,
+    replace: replaceBullets,
+  } = useFieldArray({
+    control: form.control,
+    name: `workExperiences.${index}.bullets`,
+  });
+
+  function applyGenerated(exp: WorkExperience) {
+    const path = `workExperiences.${index}` as const;
+    form.setValue(`${path}.position`, exp.position ?? "");
+    form.setValue(`${path}.company`, exp.company ?? "");
+    form.setValue(`${path}.startDate`, exp.startDate ?? "");
+    form.setValue(`${path}.endDate`, exp.endDate ?? "");
+    replaceBullets(exp.bullets ?? []);
+  }
+
   return (
     <div
       className={cn(
         "space-y-3 rounded-md border bg-background p-3",
         isDragging && "relative z-50 cursor-grab shadow-xl",
+        entryHidden && "opacity-60",
       )}
       ref={setNodeRef}
       style={{
@@ -188,19 +302,46 @@ function WorkExperienceItem({
       }}
     >
       <div className="flex justify-between gap-2">
-        <span className="font-semibold">Work experience {index + 1}</span>
-        <GripHorizontal
-          className="size-5 cursor-grab text-muted-foreground focus:outline-hidden"
-          {...safeAttributes}
-          {...listeners}
-        />
+        <span className="font-semibold">
+          Work experience {index + 1}
+          {entryHidden && (
+            <span className="ml-2 text-xs font-normal text-muted-foreground">
+              Hidden from this resume
+            </span>
+          )}
+        </span>
+        <div className="flex items-center gap-1">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            aria-pressed={Boolean(entryHidden)}
+            aria-label={
+              entryHidden
+                ? `Show work experience ${index + 1}`
+                : `Hide work experience ${index + 1}`
+            }
+            onClick={() =>
+              form.setValue(`workExperiences.${index}.hidden`, !entryHidden, {
+                shouldDirty: true,
+              })
+            }
+          >
+            {entryHidden ? (
+              <EyeOff className="size-4" />
+            ) : (
+              <Eye className="size-4" />
+            )}
+          </Button>
+          <GripHorizontal
+            className="size-5 cursor-grab text-muted-foreground focus:outline-hidden"
+            {...safeAttributes}
+            {...listeners}
+          />
+        </div>
       </div>
       <div className="flex justify-center">
-        <GenerateWorkExperienceButton
-          onWorkExperienceGenerated={(exp) =>
-            form.setValue(`workExperiences.${index}`, exp)
-          }
-        />
+        <GenerateWorkExperienceButton onWorkExperienceGenerated={applyGenerated} />
       </div>
       <FormField
         control={form.control}
@@ -286,19 +427,27 @@ function WorkExperienceItem({
         Leave <span className="font-semibold">end date</span> empty if you are
         currently working here.
       </FormDescription>
-      <FormField
-        control={form.control}
-        name={`workExperiences.${index}.description`}
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Description</FormLabel>
-            <FormControl>
-              <Textarea {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      <div className="space-y-2">
+        <p className="text-sm font-medium">Bullet points</p>
+        {bulletFields.map((bullet, bulletIndex) => (
+          <BulletRow
+            key={bullet.id}
+            form={form}
+            index={index}
+            bulletIndex={bulletIndex}
+            onRemove={() => removeBullet(bulletIndex)}
+          />
+        ))}
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => appendBullet({ text: "", hidden: false })}
+        >
+          <Plus className="size-4" />
+          Add bullet
+        </Button>
+      </div>
       <Button variant="destructive" type="button" onClick={() => remove(index)}>
         Remove
       </Button>

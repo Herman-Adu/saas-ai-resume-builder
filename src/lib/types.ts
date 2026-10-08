@@ -6,9 +6,17 @@ export interface EditorFormProps {
   setResumeData: (data: ResumeValues) => void;
 }
 
+const inSavedOrder = {
+  orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+} satisfies { orderBy: Prisma.WorkExperienceOrderByWithRelationInput[] };
+
 export const resumeDataInclude = {
-  workExperiences: true,
-  educations: true,
+  workExperiences: inSavedOrder,
+  educations: inSavedOrder,
+  links: inSavedOrder,
+  certifications: inSavedOrder,
+  languages: inSavedOrder,
+  projects: inSavedOrder,
 } satisfies Prisma.ResumeInclude;
 
 export type ResumeServerData = Prisma.ResumeGetPayload<{

@@ -1,6 +1,7 @@
 "use client";
 
 import useDimensions from "@/hooks/useDimensions";
+import { Bullet, visibleBullets } from "@/lib/bullets";
 import { cn } from "@/lib/utils";
 import { ResumeValues } from "@/lib/validation";
 import { formatDate } from "date-fns";
@@ -161,13 +162,34 @@ function SummarySection({ resumeData }: ResumeSectionProps) {
   );
 }
 
+function BulletList({ bullets }: { bullets: Bullet[] | undefined }) {
+  const shown = visibleBullets(bullets);
+  if (!shown.length) return null;
+
+  return (
+    <ul className="list-disc space-y-0.5 pl-4 text-xs">
+      {shown.map((bullet, index) => (
+        <li key={index}>{bullet.text}</li>
+      ))}
+    </ul>
+  );
+}
+
 function WorkExperienceSection({ resumeData }: ResumeSectionProps) {
   // Destructure workExperiences from resumeData
   const { workExperiences, colorHex } = resumeData;
 
   // get all work experience that has data
   const workExperiencesNotEmpty = workExperiences?.filter(
-    (exp) => Object.values(exp).filter(Boolean).length > 0,
+    (exp) =>
+      !exp.hidden &&
+      Boolean(
+        exp.position ||
+          exp.company ||
+          exp.startDate ||
+          exp.endDate ||
+          visibleBullets(exp.bullets).length,
+      ),
   );
 
   // Check we have work experience with data - no empty objects
@@ -207,7 +229,7 @@ function WorkExperienceSection({ resumeData }: ResumeSectionProps) {
               )}
             </div>
             <p className="text-xs font-semibold">Company: {exp.company}</p>
-            <div className="whitespace-pre-line text-xs">{exp.description}</div>
+            <BulletList bullets={exp.bullets} />
           </div>
         ))}
       </div>
@@ -221,7 +243,9 @@ function EducationSection({ resumeData }: ResumeSectionProps) {
 
   // get all work educations that has data
   const educationsNotEmpty = educations?.filter(
-    (edu) => Object.values(edu).filter(Boolean).length > 0,
+    (edu) =>
+      !edu.hidden &&
+      Boolean(edu.degree || edu.school || edu.startDate || edu.endDate),
   );
 
   // Check we have work educations with data - no empty objects
