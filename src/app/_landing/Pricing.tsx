@@ -33,9 +33,7 @@ export default function Pricing({ prices, signedIn }: PricingProps) {
             const price =
               plan.id === "free"
                 ? "£0"
-                : plan.id === "pro"
-                  ? prices.pro
-                  : prices.pro_plus;
+                : (plan.id === "pro" ? prices.pro : prices.pro_plus)?.label;
             const recommended = plan.id === "pro";
 
             return (

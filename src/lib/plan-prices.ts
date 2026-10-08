@@ -3,21 +3,31 @@ import { formatPrice } from "@/lib/plans";
 import stripe from "@/lib/stripe";
 import { unstable_cache } from "next/cache";
 
+export interface PlanPrice {
+  label: string;
+  amount: number;
+  currency: string;
+}
+
 export interface PlanPrices {
-  pro: string | null;
-  pro_plus: string | null;
+  pro: PlanPrice | null;
+  pro_plus: PlanPrice | null;
 }
 
 // Errors are thrown out of the cache wrapper so a Stripe outage is never cached.
 const fetchMonthlyPrice = unstable_cache(
-  async (priceId: string) => {
+  async (priceId: string): Promise<PlanPrice> => {
     const price = await stripe.prices.retrieve(priceId);
     if (price.unit_amount === null) {
       throw new Error(`Stripe price ${priceId} has no fixed amount`);
     }
-    return formatPrice(price.unit_amount, price.currency);
+    return {
+      label: formatPrice(price.unit_amount, price.currency),
+      amount: price.unit_amount / 100,
+      currency: price.currency.toUpperCase(),
+    };
   },
-  ["stripe-monthly-price"],
+  ["stripe-monthly-price-v2"],
   { revalidate: 3600 },
 );
 
