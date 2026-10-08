@@ -14,6 +14,7 @@ import { summarySchema, SummaryValues } from "@/lib/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import SectionVisibilityToggle from "../SectionVisibilityToggle";
 import GenerateSummaryButton from "./GenerateSummaryButton";
 
 export default function SummaryForm({
@@ -44,6 +45,12 @@ export default function SummaryForm({
           Write a short introduction for your resume or let the AI generate one
           from your entered data.
         </p>
+        <SectionVisibilityToggle
+          section="summary"
+          label="summary"
+          resumeData={resumeData}
+          setResumeData={setResumeData}
+        />
       </div>
       <Form {...form}>
         <form className="space-y-3">

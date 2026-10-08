@@ -14,9 +14,15 @@ import { Input } from "@/components/ui/input";
 import { EditorFormProps } from "@/lib/types";
 import { educationSchema, EducationValues } from "@/lib/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { GripHorizontal } from "lucide-react";
+import { Eye, EyeOff, GripHorizontal } from "lucide-react";
 import { useEffect } from "react";
-import { useFieldArray, useForm, UseFormReturn } from "react-hook-form";
+import {
+  useFieldArray,
+  useForm,
+  UseFormReturn,
+  useWatch,
+} from "react-hook-form";
+import SectionVisibilityToggle from "../SectionVisibilityToggle";
 
 import {
   closestCenter,
@@ -52,6 +58,7 @@ export default function EducationForm({
         school: edu?.school || "",
         startDate: edu?.startDate || "",
         endDate: edu?.endDate || "",
+        hidden: edu?.hidden ?? false,
       })),
     },
   });
@@ -98,6 +105,12 @@ export default function EducationForm({
         <p className="text-sm text-muted-foreground">
           Add as many educations as you like.
         </p>
+        <SectionVisibilityToggle
+          section="educations"
+          label="education"
+          resumeData={resumeData}
+          setResumeData={setResumeData}
+        />
       </div>
       <Form {...form}>
         <form className="space-y-3">
@@ -131,7 +144,7 @@ export default function EducationForm({
                   school: "",
                   startDate: "",
                   endDate: "",
-                  //description: "",
+                  hidden: false,
                 })
               }
             >
@@ -166,11 +179,17 @@ function EducationItem({ id, form, index, remove }: EducationItemProps) {
   // it out so the client render matches the server.
   const { "aria-describedby": _ariaDesc, ...safeAttributes } = attributes;
 
+  const entryHidden = useWatch({
+    control: form.control,
+    name: `educations.${index}.hidden`,
+  });
+
   return (
     <div
       className={cn(
         "space-y-3 rounded-md border bg-background p-3",
         isDragging && "relative z-50 cursor-grab shadow-xl",
+        entryHidden && "opacity-60",
       )}
       ref={setNodeRef}
       style={{
@@ -179,12 +198,43 @@ function EducationItem({ id, form, index, remove }: EducationItemProps) {
       }}
     >
       <div className="flex justify-between gap-2">
-        <span className="font-semibold">Education {index + 1}</span>
-        <GripHorizontal
-          className="size-5 cursor-grab text-muted-foreground focus:outline-hidden"
-          {...safeAttributes}
-          {...listeners}
-        />
+        <span className="font-semibold">
+          Education {index + 1}
+          {entryHidden && (
+            <span className="ml-2 text-xs font-normal text-muted-foreground">
+              Hidden from this resume
+            </span>
+          )}
+        </span>
+        <div className="flex items-center gap-1">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            aria-pressed={Boolean(entryHidden)}
+            aria-label={
+              entryHidden
+                ? `Show education ${index + 1}`
+                : `Hide education ${index + 1}`
+            }
+            onClick={() =>
+              form.setValue(`educations.${index}.hidden`, !entryHidden, {
+                shouldDirty: true,
+              })
+            }
+          >
+            {entryHidden ? (
+              <EyeOff className="size-4" />
+            ) : (
+              <Eye className="size-4" />
+            )}
+          </Button>
+          <GripHorizontal
+            className="size-5 cursor-grab text-muted-foreground focus:outline-hidden"
+            {...safeAttributes}
+            {...listeners}
+          />
+        </div>
       </div>
       <FormField
         control={form.control}

@@ -2,6 +2,7 @@
 
 import useDimensions from "@/hooks/useDimensions";
 import { Bullet, visibleBullets } from "@/lib/bullets";
+import { forOutput } from "@/lib/tailoring";
 import { cn } from "@/lib/utils";
 import { ResumeValues } from "@/lib/validation";
 import { formatDate } from "date-fns";
@@ -17,11 +18,12 @@ interface ResumePreviewProps {
 }
 
 export default function ResumePreview({
-  resumeData,
+  resumeData: fullResumeData,
   contentRef,
   className,
 }: ResumePreviewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const resumeData = useMemo(() => forOutput(fullResumeData), [fullResumeData]);
 
   const { width } = useDimensions(containerRef);
 

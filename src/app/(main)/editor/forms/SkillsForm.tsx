@@ -16,6 +16,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
+import SectionVisibilityToggle from "../SectionVisibilityToggle";
+
 export default function SkillsForm({
   resumeData,
   setResumeData,
@@ -48,6 +50,12 @@ export default function SkillsForm({
       <div className="space-y-1.5 text-center">
         <h2 className="text-2xl font-semibold">Skills</h2>
         <p className="text-sm text-muted-foreground">What are you good at?</p>
+        <SectionVisibilityToggle
+          section="skills"
+          label="skills"
+          resumeData={resumeData}
+          setResumeData={setResumeData}
+        />
       </div>
       <Form {...form}>
         <form className="space-y-3">

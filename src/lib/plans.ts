@@ -1,3 +1,4 @@
+import { tailoredResumeLimits } from "./permissions";
 import type { SubscriptionLevel } from "./subscription";
 
 export interface Plan {
@@ -38,6 +39,7 @@ export const plans: readonly Plan[] = [
 ];
 
 export function planFeatures(plan: Plan): string[] {
+  const tailoredLimit = tailoredResumeLimits[plan.id];
   const resumes =
     plan.resumeLimit === 1
       ? "1 resume"
@@ -49,6 +51,13 @@ export function planFeatures(plan: Plan): string[] {
     resumes,
     "Live preview and autosave",
     "Print-ready PDF export",
+    ...(tailoredLimit > 0
+      ? [
+          Number.isFinite(tailoredLimit)
+            ? `Tailor to each job, up to ${tailoredLimit} tailored resumes`
+            : "Tailor to each job, unlimited tailored resumes",
+        ]
+      : []),
     ...(plan.aiTools ? ["AI-written summary and work experience"] : []),
     ...(plan.customizations ? ["Colour and border customisation"] : []),
   ];

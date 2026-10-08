@@ -2,10 +2,20 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { parseStoredBullets } from "./bullets";
 import { ResumeServerData } from "./types";
-import { ResumeValues } from "./validation";
+import {
+  hideableSections,
+  type HideableSection,
+  type ResumeValues,
+} from "./validation";
 
 function toDateInput(date: Date | null) {
   return date?.toISOString().split("T")[0];
+}
+
+function parseHiddenSections(stored: string[] | null): HideableSection[] {
+  return (stored ?? []).filter((section): section is HideableSection =>
+    (hideableSections as readonly string[]).includes(section),
+  );
 }
 
 export function cn(...inputs: ClassValue[]) {
@@ -80,5 +90,6 @@ export function mapToResumeValues(data: ResumeServerData): ResumeValues {
     borderStyle: data.borderStyle,
     colorHex: data.colorHex,
     summary: data.summary || undefined,
+    hiddenSections: parseHiddenSections(data.hiddenSections),
   };
 }
