@@ -39,12 +39,27 @@ jobs:
       POSTGRES_PRISMA_URL: ${{ secrets.POSTGRES_PRISMA_URL }}
       POSTGRES_URL_NON_POOLING: ${{ secrets.POSTGRES_URL_NON_POOLING }}
       NEXT_PUBLIC_BASE_URL: http://localhost:3000
+      # Required by src/env.ts at build, but no browser test calls these services.
+      POSTGRES_URL: ${{ secrets.POSTGRES_PRISMA_URL }}
+      POSTGRES_URL_NO_SSL: ${{ secrets.POSTGRES_PRISMA_URL }}
+      POSTGRES_USER: ci
+      POSTGRES_HOST: ci
+      POSTGRES_PASSWORD: ci
+      POSTGRES_DATABASE: ci
+      BLOB_READ_WRITE_TOKEN: ci-placeholder
+      OPENAI_API_KEY: ci-placeholder
+      STRIPE_SECRET_KEY: sk_test_ci_placeholder
+      STRIPE_WEBHOOK_SECRET: whsec_ci_placeholder
+      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: pk_test_ci_placeholder
+      # Signed-in test fixtures write these ids into the subscription row.
+      NEXT_PUBLIC_STRIPE_PRICE_ID_PRO_MONTHLY: price_ci_pro_monthly
+      NEXT_PUBLIC_STRIPE_PRICE_ID_PRO_PLUS_MONTHLY: price_ci_pro_plus_monthly
     steps:
       - name: Skip until app secrets are configured
         id: gate
         run: |
           if [ -z "$BETTER_AUTH_SECRET" ] || [ -z "$POSTGRES_PRISMA_URL" ]; then
-            echo "::notice::App secrets not set in GitHub; skipping build and browser tests."
+            echo "::warning::App secrets not set in GitHub (BETTER_AUTH_SECRET, POSTGRES_PRISMA_URL, POSTGRES_URL_NON_POOLING); the build and ALL browser tests were skipped, so this check proves nothing."
             echo "ready=false" >> "$GITHUB_OUTPUT"
           else
             echo "ready=true" >> "$GITHUB_OUTPUT"
@@ -63,7 +78,7 @@ jobs:
       - if: steps.gate.outputs.ready == 'true'
         run: npm run build
       - if: steps.gate.outputs.ready == 'true'
-        name: Browser tests (smoke, seo, axe)
+        name: Browser tests (smoke, seo, axe, authed)
         run: |
           npm run start &
           npx --yes wait-on http://localhost:3000 --timeout 120000

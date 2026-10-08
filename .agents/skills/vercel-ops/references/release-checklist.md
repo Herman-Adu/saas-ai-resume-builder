@@ -8,7 +8,7 @@ Target: `saas-ai-resume-builder-seven.vercel.app` (update here when a custom dom
 2. `npm run build` passes locally from a clean `origin/main` checkout.
 3. `vercel env ls production` lists every variable in `src/env.ts`. Compare with `rg -o "process\.env\.[A-Z_]+" -h src | sort -u`.
 4. Pending Prisma migrations are applied to the production database (`npx prisma migrate status`, see `db-schema-change`). The build does not run them.
-5. Stripe: test or live keys are decided (currently **test**). With test keys, the UI says "demo build" near pricing and checkout.
+5. Stripe stays on **test** keys (demo build) until the owner chooses to switch; it is not part of any sprint.
 6. The latest preview deployment of `main` passes `QA_BASE_URL=<preview> npm run test:smoke && npm run test:axe`.
 
 ## Gate

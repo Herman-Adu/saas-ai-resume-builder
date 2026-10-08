@@ -1,8 +1,12 @@
 import path from "node:path";
+import { loadEnvConfig } from "@next/env";
 import { defineConfig, devices } from "@playwright/test";
 
 // Playwright compiles its config as CommonJS, so `import.meta` (used by repo-root.ts) is unavailable here.
 const REPO_ROOT = `${path.resolve(__dirname, "../..")}/`;
+
+// Signed-in tests talk to the database and need the same price ids as the app.
+loadEnvConfig(REPO_ROOT, true);
 
 const PORT = Number(process.env.PORT ?? 3000);
 const baseURL = process.env.E2E_BASE_URL ?? `http://localhost:${PORT}`;

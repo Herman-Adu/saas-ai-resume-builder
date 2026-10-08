@@ -6,7 +6,11 @@ import ResumeItem from "./ResumeItem";
 import CreateResumeButton from "./CreateResumeButton";
 import TailorButton from "./TailorButton";
 import { getUserSubscriptionLevel } from "@/lib/subscription";
-import { canCreateResume, canTailor } from "@/lib/permissions";
+import {
+  canCreateResume,
+  canCreateTailoredResume,
+  canTailor,
+} from "@/lib/permissions";
 
 export const metadata: Metadata = {
   title: "Your resumes",
@@ -39,6 +43,7 @@ export default async function Page() {
 
   // Tailored copies have their own cap, so they don't use up base resumes.
   const baseCount = resumes.filter((resume) => !resume.isTailored).length;
+  const tailoredCount = resumes.length - baseCount;
 
   return (
     <main className="mx-auto w-full max-w-7xl space-y-6 px-3 py-6">
@@ -47,7 +52,10 @@ export default async function Page() {
           canCreate={canCreateResume(subscriptionLevel, baseCount)}
         />
         <TailorButton
-          canTailor={canTailor(subscriptionLevel)}
+          canTailor={
+            canTailor(subscriptionLevel) &&
+            canCreateTailoredResume(subscriptionLevel, tailoredCount)
+          }
           hasMaster={resumes.some((resume) => resume.isMaster)}
         />
       </div>

@@ -29,6 +29,7 @@ export default function ResumePreview({
 
   return (
     <div
+      data-testid="resume-preview"
       className={cn(
         "aspect-210/297 h-fit w-full bg-white text-black",
         className,

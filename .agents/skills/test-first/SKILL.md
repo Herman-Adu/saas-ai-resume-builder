@@ -25,6 +25,7 @@ Only Vitest unit tests exist (`qa/unit`, config in `qa/config/vitest.config.mts`
 | Page renders, route guard, critical click path    | smoke       | `qa/smoke/*.spec.ts`               |
 | Metadata, sitemap, robots                         | seo         | `qa/seo/*.spec.ts`                 |
 | Accessibility of a page                           | axe         | `qa/axe/*.spec.ts`                 |
+| Any journey that needs a signed-in user or a plan | authed      | `qa/e2e/authed/*.spec.ts`          |
 
 Make it testable by design. Put the rule in a small pure module (`src/lib/permissions.ts`, `src/lib/validation.ts`, a new `src/lib/<x>.ts`) and keep components and actions thin, so most tests are fast unit tests.
 
@@ -34,7 +35,7 @@ Make it testable by design. Put the rule in a small pure module (`src/lib/permis
 npm run test:unit                        # Vitest via qa/config/vitest.config.mts (resolves @/ to src/)
 npm run test:unit -- qa/unit/<area>      # narrow while iterating
 npm run test:integration                 # from Sprint 0
-npm run test:smoke && npm run test:axe   # from Sprint 0; always before merge
+npm run test:smoke && npm run test:axe && npm run test:authed   # always before merge
 ```
 
 Never call `vitest` without the project config, or `@/` won't resolve.

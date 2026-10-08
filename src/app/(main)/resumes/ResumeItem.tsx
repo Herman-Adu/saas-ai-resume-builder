@@ -42,7 +42,10 @@ export default function ResumeItem({ resume }: ResumeItemProps) {
 
   const wasUpdated = resume.updatedAt !== resume.createdAt;
   return (
-    <div className="group relative rounded-lg border border-transparent bg-secondary p-3 transition-colors hover:border-border">
+    <div
+      data-testid="resume-card"
+      className="group relative rounded-lg border border-transparent bg-secondary p-3 transition-colors hover:border-border"
+    >
       <div className="space-y-3">
         <Link
           href={`/editor?resumeId=${resume.id}`}
@@ -118,7 +121,8 @@ function MoreMenu({ resumeId, canBeMaster, onPrintClick }: MoreMenuProps) {
           <Button
             variant="ghost"
             size="icon"
-            className="absolute right-0.5 top-0.5 opacity-0 transition-opacity group-hover:opacity-100"
+            aria-label="Resume options"
+            className="absolute right-0.5 top-0.5 opacity-0 transition-opacity focus-visible:opacity-100 group-hover:opacity-100 data-[state=open]:opacity-100"
           >
             <MoreVertical className="size-4" />
           </Button>
