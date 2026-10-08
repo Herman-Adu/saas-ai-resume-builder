@@ -1,0 +1,62 @@
+import type { SubscriptionLevel } from "./subscription";
+
+export interface Plan {
+  id: SubscriptionLevel;
+  name: string;
+  blurb: string;
+  resumeLimit: number;
+  aiTools: boolean;
+  customizations: boolean;
+}
+
+// Limits here must match src/lib/permissions.ts; qa/unit/plans.test.ts enforces it.
+export const plans: readonly Plan[] = [
+  {
+    id: "free",
+    name: "Free",
+    blurb: "Build one resume and see how it feels.",
+    resumeLimit: 1,
+    aiTools: false,
+    customizations: false,
+  },
+  {
+    id: "pro",
+    name: "Pro",
+    blurb: "AI writing for the resumes you actually send.",
+    resumeLimit: 3,
+    aiTools: true,
+    customizations: false,
+  },
+  {
+    id: "pro_plus",
+    name: "Pro Plus",
+    blurb: "Unlimited resumes, styled your way.",
+    resumeLimit: Infinity,
+    aiTools: true,
+    customizations: true,
+  },
+];
+
+export function planFeatures(plan: Plan): string[] {
+  const resumes =
+    plan.resumeLimit === 1
+      ? "1 resume"
+      : Number.isFinite(plan.resumeLimit)
+        ? `Up to ${plan.resumeLimit} resumes`
+        : "Unlimited resumes";
+
+  return [
+    resumes,
+    "Live preview and autosave",
+    "Print-ready PDF export",
+    ...(plan.aiTools ? ["AI-written summary and work experience"] : []),
+    ...(plan.customizations ? ["Colour and border customisation"] : []),
+  ];
+}
+
+export function formatPrice(amountInMinorUnits: number, currency: string) {
+  return new Intl.NumberFormat("en-GB", {
+    style: "currency",
+    currency: currency.toUpperCase(),
+  }).format(amountInMinorUnits / 100);
+}

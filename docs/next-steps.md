@@ -14,7 +14,8 @@ CI (`.github/workflows/ci.yml`): `checks` runs typecheck, lint and unit tests wi
 | OS | #3 | Agent operating system: `AGENTS.md`, `.agents/skills/` (general skills copied, project ones adapted for Clerk / Prisma 7 / npm), Vitest + `qa/unit/meta/skills.test.ts`, `npm run check`. Fixed the existing Navbar lint error. |
 | S1 | #5, #6 | Better Auth server, `/api/auth` route and Better Auth tables (additive). Zod 4 and dev-dependency pins moved so `npm ci` works without `--legacy-peer-deps`. |
 | S1b | #7 | Email and password sign-in/sign-up, `getAuthUserId()` session helper, all Clerk code, keys and skill removed. Stripe customer id now read from `UserSubscription`. |
-| S2 | this PR | Dependency updates: Next.js 16.4.0, Stripe 23, lucide-react 1.x, eslint-config-prettier 10, prettier-plugin-tailwindcss 0.8, plus in-range updates. Stripe moved `current_period_end` onto subscription items, so the webhook now uses `getPeriodEnd()` (unit tested). Deferred majors: Tailwind 4, ESLint 10, TypeScript 7, Prisma, `@types/node` 26. |
+| S3 | this PR | Orbit CV landing page and brand: orange-on-ink tokens, Bricolage Grotesque headings, `src/app/_landing/` sections (hero with a real resume sheet, how it works, features, pricing from `src/lib/plans.ts`, FAQ, final CTA, footer), new logo, icon and share image. Plan catalogue is unit tested; smoke, SEO and axe cover the page in light and dark. |
+| S2 | merged | Dependency updates: Next.js 16.4.0, Stripe 23, lucide-react 1.x, eslint-config-prettier 10, prettier-plugin-tailwindcss 0.8, plus in-range updates. Stripe moved `current_period_end` onto subscription items, so the webhook now uses `getPeriodEnd()` (unit tested). Deferred majors: Tailwind 4, ESLint 10, TypeScript 7, Prisma, `@types/node` 26. |
 
 ## Next
 
