@@ -9,7 +9,7 @@ interface NavbarProps {
 
 export default function Navbar({ user }: NavbarProps) {
   return (
-    <header className="shadow-sm">
+    <header className="shadow-xs">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 p-3">
         <Link href="/resumes" aria-label="Orbit CV, my resumes">
           <OrbitLogo />

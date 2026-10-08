@@ -65,9 +65,9 @@ export default function ResumeItem({ resume }: ResumeItemProps) {
           <ResumePreview
             resumeData={mapToResumeValues(resume)}
             contentRef={contentRef}
-            className="overflow-hidden shadow-sm transition-shadow group-hover:shadow-lg"
+            className="overflow-hidden shadow-xs transition-shadow group-hover:shadow-lg"
           />
-          <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-white to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 h-16 bg-linear-to-t from-white to-transparent" />
         </Link>
       </div>
       <MoreMenu resumeId={resume.id} onPrintClick={reactToPrintFn} />

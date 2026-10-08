@@ -27,7 +27,7 @@ export default function ResumePreview({
   return (
     <div
       className={cn(
-        "aspect-[210/297] h-fit w-full bg-white text-black",
+        "aspect-210/297 h-fit w-full bg-white text-black",
         className,
       )}
       ref={containerRef}

@@ -31,7 +31,7 @@ export default function UserMenu({ user }: UserMenuProps) {
     <DropdownMenu>
       <DropdownMenuTrigger
         aria-label="Account menu"
-        className="flex size-[35px] items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className="flex size-[35px] items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
       >
         {initial}
       </DropdownMenuTrigger>
