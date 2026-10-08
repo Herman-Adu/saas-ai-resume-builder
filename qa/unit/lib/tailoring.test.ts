@@ -23,6 +23,7 @@ function serverResume(
     photoUrl: "https://blob.example/photo.png",
     colorHex: "#112233",
     borderStyle: "circle",
+    template: "classic",
     summary: "Engineer",
     firstName: "Ada",
     lastName: "Lovelace",
@@ -306,5 +307,24 @@ describe("buildTailoredCopy", () => {
 
     expect(copy.skills).toEqual(["TypeScript", "SQL"]);
     expect(copy.skills).not.toBe(source.skills);
+  });
+});
+
+describe("template on a resume", () => {
+  it("is copied by Tailor, so the copy looks like the master", () => {
+    const copy = buildTailoredCopy(serverResume({ template: "modern" }), "Label");
+    expect(copy.template).toBe("modern");
+  });
+
+  it("is passed to the editor form", () => {
+    expect(mapToResumeValues(serverResume({ template: "compact" })).template).toBe(
+      "compact",
+    );
+  });
+
+  it("falls back to Classic when the stored value is not a known template", () => {
+    expect(mapToResumeValues(serverResume({ template: "retro" })).template).toBe(
+      "classic",
+    );
   });
 });

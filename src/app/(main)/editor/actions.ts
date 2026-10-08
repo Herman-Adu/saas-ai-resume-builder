@@ -1,6 +1,11 @@
 "use server";
 
-import { canCreateResume, canUseCustomizations } from "@/lib/permissions";
+import {
+  canCreateResume,
+  canUseCustomizations,
+  canUseTemplate,
+} from "@/lib/permissions";
+import { defaultTemplate } from "@/lib/templates";
 import prisma from "@/lib/prisma";
 import { getUserSubscriptionLevel } from "@/lib/subscription";
 import { resumeSchema, ResumeValues } from "@/lib/validation";
@@ -133,6 +138,19 @@ export async function saveResume(values: ResumeValues) {
   // check user has customizations for subscription level
   if (hasCustomizations && !canUseCustomizations(subscriptionLevel)) {
     throw new Error("Customizations not allowed for this subscription level");
+  }
+
+  // Only a change is gated, so a user who downgrades keeps the template they
+  // already have and can still save the resume.
+  const requestedTemplate = resumeValues.template;
+  const currentTemplate = existingResume?.template ?? defaultTemplate;
+
+  if (
+    requestedTemplate &&
+    requestedTemplate !== currentTemplate &&
+    !canUseTemplate(subscriptionLevel, requestedTemplate)
+  ) {
+    throw new Error("Template not allowed for this subscription level");
   }
 
   // upload photo to vercel blob sttorage

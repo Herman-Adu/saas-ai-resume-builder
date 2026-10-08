@@ -23,6 +23,9 @@ model Resume {
   photoUrl    String?
   colorHex    String  @default("#000000")
   borderStyle String  @default("squircle")
+  // Checked against src/lib/templates.ts, not a database enum, so adding a
+  // template never needs a migration.
+  template    String  @default("classic")
   summary     String?
   firstName   String?
   lastName    String?

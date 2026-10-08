@@ -56,6 +56,7 @@ export function buildTailoredCopy(
     photoUrl: source.photoUrl,
     colorHex: source.colorHex,
     borderStyle: source.borderStyle,
+    template: source.template,
     summary: source.summary,
     firstName: source.firstName,
     lastName: source.lastName,

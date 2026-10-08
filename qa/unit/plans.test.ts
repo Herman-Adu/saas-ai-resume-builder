@@ -3,6 +3,7 @@ import {
   canCreateResume,
   canUseAITools,
   canUseCustomizations,
+  canUseTemplate,
 } from "@/lib/permissions";
 import { formatPrice, planFeatures, plans } from "@/lib/plans";
 
@@ -54,6 +55,14 @@ describe("planFeatures", () => {
     expect(byId("pro").join(" ")).toMatch(/import your CV/i);
     expect(byId("pro_plus").join(" ")).toMatch(/import your CV/i);
   });
+
+  it.each(plans)(
+    "$id promises all four templates only if permissions.ts allows them",
+    (plan) => {
+      const promised = /all four templates/i.test(planFeatures(plan).join(" "));
+      expect(promised).toBe(canUseTemplate(plan.id, "modern"));
+    },
+  );
 
   it("only promises design customisation on pro_plus", () => {
     expect(byId("pro").join(" ")).not.toMatch(/customis/i);
