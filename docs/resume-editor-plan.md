@@ -42,7 +42,7 @@ These numbers are my suggestion and are a pricing decision, so please change the
 ## Gates that apply
 
 - Schema changes in S7 and S9 are additive only. Anything destructive needs your approval.
-- No production deploy, domain or live Stripe key change without your approval.
+- No production deploy or domain change without your approval.
 - Secrets are added by you in Vars. The AI key already exists as `OPENAI_API_KEY`.
 
 ## Open risks

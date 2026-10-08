@@ -27,7 +27,7 @@ Read this file, then open **only** the skill that matches the task. Skills link 
 
 1. **Never commit to `main`.** One sprint = one `v0/<id>-<name>` branch = one PR = squash-merge. Branch from the real `main`.
 2. **Test first.** Write the failing test, see it fail for the right reason, then implement.
-3. **Green before every push:** `npm run check` (typecheck, lint, unit), plus the browser tests (smoke + axe + seo) once Sprint 0 adds them. A failure gets fixed in the same sprint; never push or merge red.
+3. **Green before every push:** `npm run check` (typecheck, lint, unit), plus the browser tests (smoke + axe + seo + authed). A failure gets fixed in the same sprint; never push or merge red.
 4. **After merge:** refresh `main`, confirm it points at the merge commit, update the ledger in `docs/next-steps.md`.
 5. **Every server action** starts with `const { userId } = await auth()` and rejects when it's missing; every Prisma query on user data filters by that `userId`. Plan limits live in `src/lib/permissions.ts`.
 6. **Schema changes are additive** unless the user approves otherwise.
@@ -39,7 +39,6 @@ Read this file, then open **only** the skill that matches the task. Skills link 
 - Deleting or rewriting existing data; non-additive schema changes.
 - Repo settings (rulesets, branch protection, secrets).
 - Secrets: the user adds them in Vars / GitHub settings. Never ask for a value in chat.
-- Switching Stripe from test to live keys.
 
 "ok", "yes and..." or silence is not approval for a gate.
 
@@ -47,7 +46,7 @@ Read this file, then open **only** the skill that matches the task. Skills link 
 
 - Plans: `v0_plans/*.md`. Ledger: `docs/next-steps.md`. ADRs: `docs/adr/`.
 - App code: `src/app` (routes, co-located route components), `src/components`, `src/lib`, `src/hooks`. `@/` maps to `src/`.
-- Tests: `qa/unit` (Vitest) today; `qa/integration`, `qa/smoke`, `qa/seo`, `qa/axe` arrive in Sprint 0. Always use the `npm run test:*` scripts.
+- Tests: `qa/unit` (Vitest); Playwright in `qa/e2e/{smoke,seo,axe,authed}`. `authed` signs in real users on a chosen plan via `qa/e2e/support/fixtures.ts` (import `test` from there, call `signedInAs`). Always use the `npm run test:*` scripts.
 - Known sandbox problems and fixes: `.agents/skills/sprint-workflow/references/troubleshooting.md`.
 
 ## Keep this system honest

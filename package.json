@@ -18,6 +18,7 @@
     "test:smoke": "playwright test --config qa/config/playwright.config.ts qa/e2e/smoke",
     "test:seo": "playwright test --config qa/config/playwright.config.ts qa/e2e/seo",
     "test:axe": "playwright test --config qa/config/playwright.config.ts qa/e2e/axe",
+    "test:authed": "playwright test --config qa/config/playwright.config.ts qa/e2e/authed",
     "check": "npm run typecheck && npm run lint && npm run test",
     "postinstall": "prisma generate"
   },

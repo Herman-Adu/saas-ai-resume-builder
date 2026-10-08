@@ -36,7 +36,7 @@ Long sprint? Commit work in progress on the sprint branch, but only push it once
 
 ```bash
 npm run check                         # typecheck + lint + unit (Vitest)
-npm run test:smoke && npm run test:axe && npm run test:seo   # from Sprint 0 on
+npm run test:smoke && npm run test:axe && npm run test:seo && npm run test:authed
 ```
 
 Add `npm run build` when config, dependencies or deploy are touched. The package manager is **npm** with `--legacy-peer-deps` (it matches the Vercel install command); don't switch to pnpm or commit another lockfile. If anything fails, fix it in this sprint and rerun. Never push or merge red; never skip a check silently. If the sandbox blocks a check (e.g. port busy), see [troubleshooting](references/troubleshooting.md), make one recovery attempt, then stop and report it as blocked.
@@ -68,7 +68,7 @@ Confirm `main` points at the merge commit. Run `.agents/skills/sprint-retro/`. A
 
 ## Gates: stop and ask
 
-Production deploy, destructive data or schema changes, repo settings, secrets, Stripe live keys. Ask, then wait. "ok", "yes and..." or silence is not approval.
+Production deploy, destructive data or schema changes, repo settings, secrets. Ask, then wait. "ok", "yes and..." or silence is not approval.
 
 ## Report
 
