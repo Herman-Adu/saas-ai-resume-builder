@@ -40,6 +40,13 @@ export default {
   				DEFAULT: 'hsl(var(--destructive))',
   				foreground: 'hsl(var(--destructive-foreground))'
   			},
+  			brand: 'hsl(var(--brand))',
+  			paper: {
+  				DEFAULT: 'hsl(var(--paper))',
+  				foreground: 'hsl(var(--paper-foreground))',
+  				muted: 'hsl(var(--paper-muted))',
+accent: 'hsl(var(--paper-accent))'
+  			},
   			border: 'hsl(var(--border))',
   			input: 'hsl(var(--input))',
   			ring: 'hsl(var(--ring))',
@@ -50,6 +57,10 @@ export default {
   				'4': 'hsl(var(--chart-4))',
   				'5': 'hsl(var(--chart-5))'
   			}
+  		},
+  		fontFamily: {
+  			sans: ['var(--font-inter)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+  			display: ['var(--font-display)', 'var(--font-inter)', 'ui-sans-serif', 'system-ui', 'sans-serif']
   		},
   		borderRadius: {
   			lg: 'var(--radius)',
