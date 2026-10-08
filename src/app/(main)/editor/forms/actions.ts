@@ -10,11 +10,11 @@ import {
   generateWorkExperienceSchema,
   WorkExperience,
 } from "@/lib/validation";
-import { auth } from "@clerk/nextjs/server";
+import { getAuthUserId } from "@/lib/session";
 
 export async function generateSummary(input: GenerateSummaryInput) {
   // get the userId so we can check the permission level
-  const { userId } = await auth();
+  const userId = await getAuthUserId();
 
   // check we got a user
   if (!userId) {
@@ -98,7 +98,7 @@ export async function generateWorkExperience(
   input: GenerateWorkExperienceInput,
 ) {
   // get the userId so we can check the permission level
-  const { userId } = await auth();
+  const userId = await getAuthUserId();
 
   // check we got a user
   if (!userId) {

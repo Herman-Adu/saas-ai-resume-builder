@@ -4,7 +4,7 @@ import { canCreateResume, canUseCustomizations } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
 import { getUserSubscriptionLevel } from "@/lib/subscription";
 import { resumeSchema, ResumeValues } from "@/lib/validation";
-import { auth } from "@clerk/nextjs/server";
+import { getAuthUserId } from "@/lib/session";
 import { del, put } from "@vercel/blob";
 import path from "path";
 
@@ -31,7 +31,7 @@ export async function saveResume(values: ResumeValues) {
     resumeSchema.parse(values);
 
   // get user
-  const { userId } = await auth();
+  const userId = await getAuthUserId();
 
   // check user
   if (!userId) {

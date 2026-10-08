@@ -12,7 +12,7 @@ Use `git fetch origin +refs/heads/main:refs/remotes/origin/main`. Fallback: `git
 Re-run Orient. Confirm the sprint branch still exists and `git diff --stat origin/main` shows only sprint files.
 
 ## `npm install` fails with ERESOLVE
-Peer ranges in this repo (Clerk, react-color) don't all declare React 19. Use `npm install --legacy-peer-deps`, the same flag Vercel's install command uses. Don't add `--force`.
+Peer ranges in this repo (react-color and others) don't all declare React 19. Use `npm install --legacy-peer-deps`, the same flag Vercel's install command uses. Don't add `--force`.
 
 ## Prisma client missing or stale (`Cannot find module '../generated/...'`)
 The client is generated into `/generated` (git-ignored) by `postinstall`. Run `npx prisma generate`. Prisma CLI commands read `POSTGRES_URL_NON_POOLING` via `prisma.config.ts`, so load the env first (see `db-schema-change`).
@@ -33,4 +33,4 @@ Turbopack is serving a cached copy of the named file from before the pull; the c
 The v0 GitHub app lacks the `workflows` permission. The user accepts it in GitHub (Settings > Applications > Vercel > Review request). Until then, keep `.github/workflows/*` out of the sprint commit and hand the user the exact YAML.
 
 ## Protected routes return 307 to `/sign-in` in headless tests
-`src/proxy.ts` sends every non-public route through Clerk. Smoke-test public pages only, or ask the user to add test-user credentials under Vars (see `clerk-auth-ops`).
+`src/proxy.ts` redirects every non-public route to `/sign-in` when there is no session cookie. Smoke-test public pages and the redirect; sign up a throwaway account for signed-in checks (see `auth-ops`).

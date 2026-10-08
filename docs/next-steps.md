@@ -4,7 +4,7 @@ Active plan: `v0_plans/realistic-map.md` (**approved**). Current sprint: S0 test
 
 Browser tests: `npm run test:smoke`, `test:seo`, `test:axe` (or `test:e2e` for all). They reuse the running dev server on port 3000. In the v0 sandbox Chromium needs system libraries once: `sudo dnf install -y nss nspr atk at-spi2-atk cups-libs libdrm libxkbcommon mesa-libgbm alsa-lib pango libXcomposite libXdamage libXrandr libXfixes`.
 
-CI (`.github/workflows/ci.yml`): `checks` runs typecheck, lint and unit tests with no secrets. `app` builds and runs the browser tests, and skips with a notice until `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`, `POSTGRES_PRISMA_URL` and `POSTGRES_URL_NON_POOLING` are added as GitHub Actions secrets.
+CI (`.github/workflows/ci.yml`): `checks` runs typecheck, lint and unit tests with no secrets. `app` builds and runs the browser tests, and skips with a notice until `BETTER_AUTH_SECRET`, `POSTGRES_PRISMA_URL` and `POSTGRES_URL_NON_POOLING` are added as GitHub Actions secrets.
 
 ## Shipped
 

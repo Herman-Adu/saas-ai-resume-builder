@@ -28,7 +28,7 @@ A plain `git fetch origin main` only moves `FETCH_HEAD`; branching from a stale 
 
 ## 2. Build, test first
 
-Follow `.agents/skills/test-first/`. While coding, apply only the skills the change touches: `react-next-patterns`, `typescript-clean-code`, `feature-slices`, `db-schema-change`, `clerk-auth-ops`.
+Follow `.agents/skills/test-first/`. While coding, apply only the skills the change touches: `react-next-patterns`, `typescript-clean-code`, `feature-slices`, `db-schema-change`, `auth-ops`.
 
 Long sprint? Commit work in progress on the sprint branch, but only push it once the checks below are green.
 

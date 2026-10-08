@@ -35,18 +35,15 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
-      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
-      CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
+      BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
       POSTGRES_PRISMA_URL: ${{ secrets.POSTGRES_PRISMA_URL }}
       POSTGRES_URL_NON_POOLING: ${{ secrets.POSTGRES_URL_NON_POOLING }}
-      NEXT_PUBLIC_CLERK_SIGN_IN_URL: /sign-in
-      NEXT_PUBLIC_CLERK_SIGN_UP_URL: /sign-up
       NEXT_PUBLIC_BASE_URL: http://localhost:3000
     steps:
       - name: Skip until app secrets are configured
         id: gate
         run: |
-          if [ -z "$CLERK_SECRET_KEY" ] || [ -z "$POSTGRES_PRISMA_URL" ]; then
+          if [ -z "$BETTER_AUTH_SECRET" ] || [ -z "$POSTGRES_PRISMA_URL" ]; then
             echo "::notice::App secrets not set in GitHub; skipping build and browser tests."
             echo "ready=false" >> "$GITHUB_OUTPUT"
           else

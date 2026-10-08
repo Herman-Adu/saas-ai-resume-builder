@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 import stripe from "@/lib/stripe";
-import { auth } from "@clerk/nextjs/server";
+import { getAuthUserId } from "@/lib/session";
 import { formatDate } from "date-fns";
 import { Metadata } from "next";
 import Stripe from "stripe";
@@ -13,8 +13,7 @@ export const metadata: Metadata = {
 
 // here I want to fetch the subscription for this user to show some information on the page
 export default async function Page() {
-  // get the clerk userId
-  const { userId } = await auth();
+  const userId = await getAuthUserId();
 
   // check we have the user
   if (!userId) {

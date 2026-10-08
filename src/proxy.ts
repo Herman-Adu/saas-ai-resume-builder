@@ -1,23 +1,23 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
-import type { NextFetchEvent, NextRequest } from "next/server";
+import { getSessionCookie } from "better-auth/cookies";
+import { NextResponse, type NextRequest } from "next/server";
 
-const isPublicRoute = createRouteMatcher([
-  "/",
-  "/tos",
-  "/sign-in(.*)",
-  "/sign-up(.*)",
-  "/api/stripe-webhook",
-  "/api/auth(.*)",
-]);
+const publicPaths = ["/", "/tos", "/sign-in", "/sign-up"];
+const publicPrefixes = ["/api/auth", "/api/stripe-webhook"];
 
-const clerkHandler = clerkMiddleware(async (auth, request) => {
-  if (!isPublicRoute(request)) {
-    await auth.protect();
+function isPublicRoute(pathname: string) {
+  return (
+    publicPaths.includes(pathname) ||
+    publicPrefixes.some((prefix) => pathname.startsWith(prefix))
+  );
+}
+
+// Optimistic cookie check only. Every page and server action validates the
+// session itself with auth.api.getSession.
+export function proxy(request: NextRequest) {
+  if (isPublicRoute(request.nextUrl.pathname) || getSessionCookie(request)) {
+    return NextResponse.next();
   }
-});
-
-export function proxy(request: NextRequest, event: NextFetchEvent) {
-  return clerkHandler(request, event);
+  return NextResponse.redirect(new URL("/sign-in", request.url));
 }
 
 export const config = {

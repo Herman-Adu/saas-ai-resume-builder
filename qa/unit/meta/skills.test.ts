@@ -54,7 +54,7 @@ describe("agent skills", () => {
     expect(skillNames.sort()).toEqual(
       [
         "architecture-review",
-        "clerk-auth-ops",
+        "auth-ops",
         "db-schema-change",
         "domain-modeling",
         "feature-slices",
