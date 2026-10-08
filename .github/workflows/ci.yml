@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      # prisma.config.ts requires this at `prisma generate` (postinstall); generate never connects.
+      POSTGRES_URL_NON_POOLING: postgresql://ci:ci@localhost:5432/ci
+      POSTGRES_PRISMA_URL: postgresql://ci:ci@localhost:5432/ci
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --legacy-peer-deps
+      - run: npm run check
+
+  app:
+    name: app
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+      CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
+      POSTGRES_PRISMA_URL: ${{ secrets.POSTGRES_PRISMA_URL }}
+      POSTGRES_URL_NON_POOLING: ${{ secrets.POSTGRES_URL_NON_POOLING }}
+      NEXT_PUBLIC_CLERK_SIGN_IN_URL: /sign-in
+      NEXT_PUBLIC_CLERK_SIGN_UP_URL: /sign-up
+      NEXT_PUBLIC_BASE_URL: http://localhost:3000
+    steps:
+      - name: Skip until app secrets are configured
+        id: gate
+        run: |
+          if [ -z "$CLERK_SECRET_KEY" ] || [ -z "$POSTGRES_PRISMA_URL" ]; then
+            echo "::notice::App secrets not set in GitHub; skipping build and browser tests."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.gate.outputs.ready == 'true'
+        uses: actions/checkout@v4
+      - if: steps.gate.outputs.ready == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - if: steps.gate.outputs.ready == 'true'
+        run: npm ci --legacy-peer-deps
+      - if: steps.gate.outputs.ready == 'true'
+        run: npx playwright install --with-deps chromium
+      - if: steps.gate.outputs.ready == 'true'
+        run: npm run build
+      - if: steps.gate.outputs.ready == 'true'
+        name: Browser tests (smoke, seo, axe)
+        run: |
+          npm run start &
+          npx --yes wait-on http://localhost:3000 --timeout 120000
+          E2E_BASE_URL=http://localhost:3000 npm run test:e2e
