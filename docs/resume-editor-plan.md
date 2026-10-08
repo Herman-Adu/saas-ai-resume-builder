@@ -1,6 +1,6 @@
 # Resume editor and templates: proposed plan
 
-Status: **confirmed. S7, S8 and S10 (PDF import) are built; S11 (Templates) is next.**
+Status: **confirmed. S7, S8, S10 (PDF import) and S11 (links, certifications, languages and projects in the editor and preview) are built; S12 (Templates) is next.**
 Terms are defined in `GLOSSARY.md`. Decisions are recorded in `docs/adr/`.
 
 ## Settled in round 1 (your answers)
@@ -22,7 +22,8 @@ Terms are defined in `GLOSSARY.md`. Decisions are recorded in `docs/adr/`.
 1. **S7 Content model.** Bullets, links, certifications, languages, projects, the master flag and the hide flag. Additive schema changes, editor forms, and the preview. Everything else depends on this.
 2. **S8 Tailor.** Mark master, one-click Tailor, remove or hide at section, entry and bullet level.
 3. **S10 PDF import** (shipped; S9 became the authenticated test harness). Upload, extract, then Review in the editor. Paid plans only.
-4. **S11 Templates.** A template field on the resume, the four templates, and plan gating.
+4. **S11 More sections** (added after S10, because the four new sections were stored but never shown). Editor form, preview rendering and hide toggles for links, certifications, languages and projects.
+5. **S12 Templates.** A template field on the resume, the four templates, and plan gating.
 
 Why this order: S7 and S8 deliver the tailoring you described first, and S10 needs the full content model to import into. Templates come last because they change how a resume looks, not what it can do.
 

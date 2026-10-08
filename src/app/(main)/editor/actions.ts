@@ -28,8 +28,6 @@ async function deletePhotoIfUnused(photoUrl: string, excludeResumeId?: string) {
 export async function saveResume(values: ResumeValues) {
   const { id } = values;
 
-  console.log("received values", values);
-
   // validate the Resume values
   const {
     photo,
