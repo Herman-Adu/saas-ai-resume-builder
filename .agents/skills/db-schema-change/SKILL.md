@@ -30,6 +30,7 @@ description: Safe Prisma 7 schema and data changes on this repo's Postgres - add
    # review prisma/migrations/<timestamp>_<change>/migration.sql: no DROP, no data rewrite
    npx prisma migrate deploy && npx prisma generate
    ```
+   Then restart the dev server (`pkill -f "next dev"`): it keeps the old Prisma client in memory and saves return 500 until it restarts (cost time again in S12).
    Outside v0, use `vercel env pull .env.local` (see `vercel-ops`) and the same commands.
 4. Update `src/lib/validation.ts` (zod) and `src/lib/types.ts` so the new field is typed end to end.
 5. `npm run check && npm run test:integration`.
