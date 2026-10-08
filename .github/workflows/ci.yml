@@ -17,6 +17,10 @@ jobs:
     name: checks
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    env:
+      # prisma.config.ts requires this at `prisma generate` (postinstall); generate never connects.
+      POSTGRES_URL_NON_POOLING: postgresql://ci:ci@localhost:5432/ci
+      POSTGRES_PRISMA_URL: postgresql://ci:ci@localhost:5432/ci
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
