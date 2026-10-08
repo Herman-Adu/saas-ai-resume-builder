@@ -8,6 +8,7 @@ import HowItWorks from "./_landing/HowItWorks";
 import LandingFooter from "./_landing/LandingFooter";
 import LandingHeader from "./_landing/LandingHeader";
 import Pricing from "./_landing/Pricing";
+import StructuredData from "./_landing/StructuredData";
 
 export default async function Home() {
   const [session, prices] = await Promise.all([getSession(), getPlanPrices()]);
@@ -15,6 +16,7 @@ export default async function Home() {
 
   return (
     <>
+      <StructuredData prices={prices} />
       <LandingHeader signedIn={signedIn} />
       <main>
         <Hero signedIn={signedIn} />

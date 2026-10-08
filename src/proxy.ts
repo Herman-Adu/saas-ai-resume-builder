@@ -1,7 +1,14 @@
 import { getSessionCookie } from "better-auth/cookies";
 import { NextResponse, type NextRequest } from "next/server";
 
-const publicPaths = ["/", "/tos", "/sign-in", "/sign-up"];
+const publicPaths = [
+  "/",
+  "/tos",
+  "/sign-in",
+  "/sign-up",
+  "/sitemap.xml",
+  "/robots.txt",
+];
 const publicPrefixes = ["/api/auth", "/api/stripe-webhook"];
 
 function isPublicRoute(pathname: string) {

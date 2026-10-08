@@ -7,6 +7,7 @@ import SignUpForm from "./SignUpForm";
 
 export const metadata: Metadata = {
   title: "Create account",
+  robots: { index: false, follow: true },
 };
 
 export default async function Page() {

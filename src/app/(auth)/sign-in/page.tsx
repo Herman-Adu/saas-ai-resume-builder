@@ -7,6 +7,7 @@ import SignInForm from "./SignInForm";
 
 export const metadata: Metadata = {
   title: "Sign in",
+  robots: { index: false, follow: true },
 };
 
 export default async function Page() {
