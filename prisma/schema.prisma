@@ -32,8 +32,16 @@ model Resume {
   phone       String?
   email       String?
 
+  // At most one master per user: enforced by a partial unique index in the
+  // content_model migration, which Prisma cannot express in the schema.
+  isMaster Boolean @default(false)
+
   workExperiences WorkExperience[]
   educations      Education[]
+  links           ResumeLink[]
+  certifications  Certification[]
+  languages       Language[]
+  projects        Project[]
   skills          String[]
 
   createdAt DateTime @default(now())
@@ -49,7 +57,11 @@ model WorkExperience {
   company     String?
   startDate   DateTime?
   endDate     DateTime?
+  // Deprecated: replaced by bullets. Kept so the change stays additive.
   description String?
+  bullets     Json      @default("[]")
+  hidden      Boolean   @default(false)
+  sortOrder   Int       @default(0)
 
   resumeId String
   resume   Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
@@ -67,6 +79,8 @@ model Education {
   school    String?
   startDate DateTime?
   endDate   DateTime?
+  hidden    Boolean   @default(false)
+  sortOrder Int       @default(0)
 
   resumeId String
   resume   Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
@@ -75,6 +89,83 @@ model Education {
   updatedAt DateTime @updatedAt
 
   @@map("educations")
+}
+
+model ResumeLink {
+  id String @id @default(cuid())
+
+  label     String?
+  url       String?
+  hidden    Boolean @default(false)
+  sortOrder Int     @default(0)
+
+  resumeId String
+  resume   Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([resumeId])
+  @@map("resume_links")
+}
+
+model Certification {
+  id String @id @default(cuid())
+
+  name       String?
+  issuer     String?
+  issuedDate DateTime?
+  url        String?
+  hidden     Boolean   @default(false)
+  sortOrder  Int       @default(0)
+
+  resumeId String
+  resume   Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([resumeId])
+  @@map("certifications")
+}
+
+model Language {
+  id String @id @default(cuid())
+
+  name      String?
+  level     String?
+  hidden    Boolean @default(false)
+  sortOrder Int     @default(0)
+
+  resumeId String
+  resume   Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([resumeId])
+  @@map("languages")
+}
+
+model Project {
+  id String @id @default(cuid())
+
+  name      String?
+  url       String?
+  startDate DateTime?
+  endDate   DateTime?
+  bullets   Json      @default("[]")
+  hidden    Boolean   @default(false)
+  sortOrder Int       @default(0)
+
+  resumeId String
+  resume   Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([resumeId])
+  @@map("projects")
 }
 
 model UserSubscription {

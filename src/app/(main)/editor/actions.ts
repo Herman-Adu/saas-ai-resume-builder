@@ -8,6 +8,10 @@ import { getAuthUserId } from "@/lib/session";
 import { del, put } from "@vercel/blob";
 import path from "path";
 
+function toDate(value: string | undefined) {
+  return value ? new Date(value) : undefined;
+}
+
 async function deletePhotoIfUnused(photoUrl: string, excludeResumeId?: string) {
   const usageCount = await prisma.resume.count({
     where: {
@@ -27,8 +31,65 @@ export async function saveResume(values: ResumeValues) {
   console.log("received values", values);
 
   // validate the Resume values
-  const { photo, workExperiences, educations, ...resumeValues } =
-    resumeSchema.parse(values);
+  const {
+    photo,
+    workExperiences,
+    educations,
+    links,
+    certifications,
+    languages,
+    projects,
+    ...resumeValues
+  } = resumeSchema.parse(values);
+
+  const sectionRows = {
+    workExperiences: workExperiences?.map((exp, sortOrder) => ({
+      position: exp.position,
+      company: exp.company,
+      startDate: toDate(exp.startDate),
+      endDate: toDate(exp.endDate),
+      bullets: exp.bullets ?? [],
+      hidden: exp.hidden ?? false,
+      sortOrder,
+    })),
+    educations: educations?.map((edu, sortOrder) => ({
+      degree: edu.degree,
+      school: edu.school,
+      startDate: toDate(edu.startDate),
+      endDate: toDate(edu.endDate),
+      hidden: edu.hidden ?? false,
+      sortOrder,
+    })),
+    links: links?.map((link, sortOrder) => ({
+      label: link.label,
+      url: link.url,
+      hidden: link.hidden ?? false,
+      sortOrder,
+    })),
+    certifications: certifications?.map((cert, sortOrder) => ({
+      name: cert.name,
+      issuer: cert.issuer,
+      issuedDate: toDate(cert.issuedDate),
+      url: cert.url,
+      hidden: cert.hidden ?? false,
+      sortOrder,
+    })),
+    languages: languages?.map((language, sortOrder) => ({
+      name: language.name,
+      level: language.level,
+      hidden: language.hidden ?? false,
+      sortOrder,
+    })),
+    projects: projects?.map((project, sortOrder) => ({
+      name: project.name,
+      url: project.url,
+      startDate: toDate(project.startDate),
+      endDate: toDate(project.endDate),
+      bullets: project.bullets ?? [],
+      hidden: project.hidden ?? false,
+      sortOrder,
+    })),
+  };
 
   // get user
   const userId = await getAuthUserId();
@@ -103,22 +164,12 @@ export async function saveResume(values: ResumeValues) {
       data: {
         ...resumeValues,
         photoUrl: newPhotoUrl,
-        workExperiences: {
-          deleteMany: {},
-          create: workExperiences?.map((exp) => ({
-            ...exp,
-            startDate: exp.startDate ? new Date(exp.startDate) : undefined,
-            endDate: exp.endDate ? new Date(exp.endDate) : undefined,
-          })),
-        },
-        educations: {
-          deleteMany: {},
-          create: educations?.map((edu) => ({
-            ...edu,
-            startDate: edu.startDate ? new Date(edu.startDate) : undefined,
-            endDate: edu.endDate ? new Date(edu.endDate) : undefined,
-          })),
-        },
+        workExperiences: { deleteMany: {}, create: sectionRows.workExperiences },
+        educations: { deleteMany: {}, create: sectionRows.educations },
+        links: { deleteMany: {}, create: sectionRows.links },
+        certifications: { deleteMany: {}, create: sectionRows.certifications },
+        languages: { deleteMany: {}, create: sectionRows.languages },
+        projects: { deleteMany: {}, create: sectionRows.projects },
         updatedAt: new Date(),
       },
     });
@@ -128,20 +179,12 @@ export async function saveResume(values: ResumeValues) {
         ...resumeValues,
         userId,
         photoUrl: newPhotoUrl,
-        workExperiences: {
-          create: workExperiences?.map((exp) => ({
-            ...exp,
-            startDate: exp.startDate ? new Date(exp.startDate) : undefined,
-            endDate: exp.endDate ? new Date(exp.endDate) : undefined,
-          })),
-        },
-        educations: {
-          create: educations?.map((edu) => ({
-            ...edu,
-            startDate: edu.startDate ? new Date(edu.startDate) : undefined,
-            endDate: edu.endDate ? new Date(edu.endDate) : undefined,
-          })),
-        },
+        workExperiences: { create: sectionRows.workExperiences },
+        educations: { create: sectionRows.educations },
+        links: { create: sectionRows.links },
+        certifications: { create: sectionRows.certifications },
+        languages: { create: sectionRows.languages },
+        projects: { create: sectionRows.projects },
       },
     });
   }
