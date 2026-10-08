@@ -1,6 +1,6 @@
 # Resume editor and templates: proposed plan
 
-Status: **proposed, waiting for confirmation. Nothing here is built.**
+Status: **confirmed. S7, S8 and S10 (PDF import) are built; S11 (Templates) is next.**
 Terms are defined in `GLOSSARY.md`. Decisions are recorded in `docs/adr/`.
 
 ## Settled in round 1 (your answers)
@@ -21,10 +21,10 @@ Terms are defined in `GLOSSARY.md`. Decisions are recorded in `docs/adr/`.
 
 1. **S7 Content model.** Bullets, links, certifications, languages, projects, the master flag and the hide flag. Additive schema changes, editor forms, and the preview. Everything else depends on this.
 2. **S8 Tailor.** Mark master, one-click Tailor, remove or hide at section, entry and bullet level.
-3. **S9 PDF import.** Upload, extract, then Review in the editor. Paid plans only.
-4. **S10 Templates.** A template field on the resume, the four templates, and plan gating.
+3. **S10 PDF import** (shipped; S9 became the authenticated test harness). Upload, extract, then Review in the editor. Paid plans only.
+4. **S11 Templates.** A template field on the resume, the four templates, and plan gating.
 
-Why this order: S7 and S8 deliver the tailoring you described first, and S9 needs the full content model to import into. Templates come last because they change how a resume looks, not what it can do. If you would rather see new looks sooner, S10 can swap with S9.
+Why this order: S7 and S8 deliver the tailoring you described first, and S10 needs the full content model to import into. Templates come last because they change how a resume looks, not what it can do.
 
 ### R2-2. How the limits count
 
@@ -41,12 +41,12 @@ These numbers are my suggestion and are a pricing decision, so please change the
 
 ## Gates that apply
 
-- Schema changes in S7 and S9 are additive only. Anything destructive needs your approval.
+- Schema changes in S7 and S10 are additive only. Anything destructive needs your approval.
 - No production deploy or domain change without your approval.
 - Secrets are added by you in Vars. The AI key already exists as `OPENAI_API_KEY`.
 
 ## Open risks
 
 - **PDF extraction quality varies.** That is why Review is a required step and why scanned PDFs fail clearly.
-- **AI cost and privacy.** Import sends CV text to an AI provider, so S9 needs a short privacy note on the upload screen and a provider setting that disables training on the data.
+- **AI cost and privacy.** Import sends CV text to an AI provider, so S10 shows a privacy note on the upload screen. Checked against OpenAI's policy: API data is not used for training by default, but is retained up to 30 days for abuse monitoring, so the note says that and never claims "not stored". Zero Data Retention needs OpenAI's approval and is not applied for yet.
 - **Existing resumes.** S7 must turn each existing description into a single bullet without losing any text, with a test that proves it.

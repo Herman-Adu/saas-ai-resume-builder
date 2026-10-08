@@ -43,6 +43,21 @@ export function canUseAITools(subscriptionLevel: SubscriptionLevel) {
   return subscriptionLevel !== "free";
 }
 
+export const cvImportDailyLimit = 10;
+
+// Importing a CV runs the AI, so it follows the same plans as the AI tools.
+export function canImportCv(subscriptionLevel: SubscriptionLevel) {
+  return canUseAITools(subscriptionLevel);
+}
+
+export function canImportCvToday(importsInLastDay: number) {
+  return importsInLastDay < cvImportDailyLimit;
+}
+
+export function cvImportWindowStart(now: Date = new Date()) {
+  return new Date(now.getTime() - 24 * 60 * 60 * 1000);
+}
+
 // only pro plus members can use customizations
 export function canUseCustomizations(subscriptionLevel: SubscriptionLevel) {
   return subscriptionLevel === "pro_plus";

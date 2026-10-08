@@ -58,7 +58,9 @@ export function planFeatures(plan: Plan): string[] {
             : "Tailor to each job, unlimited tailored resumes",
         ]
       : []),
-    ...(plan.aiTools ? ["AI-written summary and work experience"] : []),
+    ...(plan.aiTools
+      ? ["AI-written summary and work experience", "Import your CV from a PDF"]
+      : []),
     ...(plan.customizations ? ["Colour and border customisation"] : []),
   ];
 }

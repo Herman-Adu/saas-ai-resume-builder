@@ -4,11 +4,13 @@ import { getAuthUserId } from "@/lib/session";
 import { Metadata } from "next";
 import ResumeItem from "./ResumeItem";
 import CreateResumeButton from "./CreateResumeButton";
+import ImportCvButton from "./ImportCvButton";
 import TailorButton from "./TailorButton";
 import { getUserSubscriptionLevel } from "@/lib/subscription";
 import {
   canCreateResume,
   canCreateTailoredResume,
+  canImportCv,
   canTailor,
 } from "@/lib/permissions";
 
@@ -50,6 +52,12 @@ export default async function Page() {
       <div className="flex flex-wrap items-center justify-center gap-3">
         <CreateResumeButton
           canCreate={canCreateResume(subscriptionLevel, baseCount)}
+        />
+        <ImportCvButton
+          canImport={
+            canImportCv(subscriptionLevel) &&
+            canCreateResume(subscriptionLevel, baseCount)
+          }
         />
         <TailorButton
           canTailor={

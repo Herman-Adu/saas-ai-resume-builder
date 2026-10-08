@@ -173,6 +173,16 @@ model Project {
   @@map("projects")
 }
 
+// Counts CV imports for the daily limit. Holds no CV content on purpose.
+model CvImport {
+  id        String   @id @default(cuid())
+  userId    String
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@map("cv_imports")
+}
+
 model UserSubscription {
   id                      String   @id @default(cuid())
   userId                  String   @unique
