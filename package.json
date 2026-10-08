@@ -10,6 +10,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --config qa/config/vitest.config.mts",
+    "test:watch": "vitest --config qa/config/vitest.config.mts",
+    "test:unit": "vitest run --config qa/config/vitest.config.mts qa/unit",
+    "check": "npm run typecheck && npm run lint && npm run test",
     "postinstall": "prisma generate"
   },
   "dependencies": {
@@ -64,7 +69,9 @@
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.8",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vite": "^8.3.3",
+    "vitest": "^5.0.3"
   },
   "overrides": {
     "@types/react": "19.3.0",
