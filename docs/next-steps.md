@@ -12,6 +12,9 @@ CI (`.github/workflows/ci.yml`): `checks` runs typecheck, lint and unit tests wi
 |---|---|---|
 | S0 | this PR | Test harness: Playwright smoke/seo/axe on `/` (desktop + mobile, light + dark), `permissions.ts` unit tests, CI `checks` + `app` jobs. Fixed 2 home-page colour-contrast failures axe found. |
 | OS | #3 | Agent operating system: `AGENTS.md`, `.agents/skills/` (general skills copied, project ones adapted for Clerk / Prisma 7 / npm), Vitest + `qa/unit/meta/skills.test.ts`, `npm run check`. Fixed the existing Navbar lint error. |
+| S1 | #5, #6 | Better Auth server, `/api/auth` route and Better Auth tables (additive). Zod 4 and dev-dependency pins moved so `npm ci` works without `--legacy-peer-deps`. |
+| S1b | #7 | Email and password sign-in/sign-up, `getAuthUserId()` session helper, all Clerk code, keys and skill removed. Stripe customer id now read from `UserSubscription`. |
+| S2 | this PR | Dependency updates: Next.js 16.4.0, Stripe 23, lucide-react 1.x, eslint-config-prettier 10, prettier-plugin-tailwindcss 0.8, plus in-range updates. Stripe moved `current_period_end` onto subscription items, so the webhook now uses `getPeriodEnd()` (unit tested). Deferred majors: Tailwind 4, ESLint 10, TypeScript 7, Prisma, `@types/node` 26. |
 
 ## Next
 
