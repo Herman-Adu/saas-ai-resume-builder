@@ -39,6 +39,8 @@ jobs:
       POSTGRES_PRISMA_URL: ${{ secrets.POSTGRES_PRISMA_URL }}
       POSTGRES_URL_NON_POOLING: ${{ secrets.POSTGRES_URL_NON_POOLING }}
       NEXT_PUBLIC_BASE_URL: http://localhost:3000
+      # The production build rate-limits sign-up per IP; every test signs up from one runner IP.
+      E2E_DISABLE_RATE_LIMIT: "true"
       # Required by src/env.ts at build, but no browser test calls these services.
       POSTGRES_URL: ${{ secrets.POSTGRES_PRISMA_URL }}
       POSTGRES_URL_NO_SSL: ${{ secrets.POSTGRES_PRISMA_URL }}
@@ -55,30 +57,29 @@ jobs:
       NEXT_PUBLIC_STRIPE_PRICE_ID_PRO_MONTHLY: price_ci_pro_monthly
       NEXT_PUBLIC_STRIPE_PRICE_ID_PRO_PLUS_MONTHLY: price_ci_pro_plus_monthly
     steps:
-      - name: Skip until app secrets are configured
-        id: gate
+      - name: Require app secrets
         run: |
-          if [ -z "$BETTER_AUTH_SECRET" ] || [ -z "$POSTGRES_PRISMA_URL" ]; then
-            echo "::warning::App secrets not set in GitHub (BETTER_AUTH_SECRET, POSTGRES_PRISMA_URL, POSTGRES_URL_NON_POOLING); the build and ALL browser tests were skipped, so this check proves nothing."
-            echo "ready=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "ready=true" >> "$GITHUB_OUTPUT"
+          missing=""
+          [ -z "$BETTER_AUTH_SECRET" ] && missing="$missing BETTER_AUTH_SECRET"
+          [ -z "$POSTGRES_PRISMA_URL" ] && missing="$missing POSTGRES_PRISMA_URL"
+          [ -z "$POSTGRES_URL_NON_POOLING" ] && missing="$missing POSTGRES_URL_NON_POOLING"
+          if [ -n "$missing" ]; then
+            echo "::error::Missing GitHub Actions secrets:$missing. Add them under Settings, Secrets and variables, Actions."
+            exit 1
           fi
-      - if: steps.gate.outputs.ready == 'true'
-        uses: actions/checkout@v4
-      - if: steps.gate.outputs.ready == 'true'
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 24
           cache: npm
-      - if: steps.gate.outputs.ready == 'true'
-        run: npm ci --legacy-peer-deps
-      - if: steps.gate.outputs.ready == 'true'
-        run: npx playwright install --with-deps chromium
-      - if: steps.gate.outputs.ready == 'true'
-        run: npm run build
-      - if: steps.gate.outputs.ready == 'true'
-        name: Browser tests (smoke, seo, axe, authed)
+      - run: npm ci --legacy-peer-deps
+      - name: Database has every migration
+        # Read-only. The browser tests use the shared Neon database, so CI never applies migrations:
+        # apply them first (db-schema-change skill), then this step passes.
+        run: npx prisma migrate status
+      - run: npx playwright install --with-deps chromium
+      - run: npm run build
+      - name: Browser tests (smoke, seo, axe, authed)
         run: |
           npm run start &
           npx --yes wait-on http://localhost:3000 --timeout 120000

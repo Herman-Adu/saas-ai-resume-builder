@@ -7,6 +7,11 @@ import prisma from "./prisma";
 const optional = (value: string | undefined) => (value ? [value] : []);
 const https = (host: string | undefined) => (host ? [`https://${host}`] : []);
 
+// Only the CI browser tests set this; it is ignored on Vercel, so production keeps rate limiting
+// and trusts only its own hosts.
+const runsE2eTests =
+  process.env.E2E_DISABLE_RATE_LIMIT === "true" && !process.env.VERCEL;
+
 export const auth = betterAuth({
   database: prismaAdapter(prisma, { provider: "postgresql" }),
   baseURL:
@@ -36,7 +41,9 @@ export const auth = betterAuth({
           ...https(process.env.VERCEL_PROJECT_PRODUCTION_URL),
         ]
       : []),
+    ...(runsE2eTests ? optional(process.env.NEXT_PUBLIC_BASE_URL) : []),
   ],
+  ...(runsE2eTests ? { rateLimit: { enabled: false } } : {}),
   session: {
     expiresIn: 60 * 60 * 24 * 7,
     updateAge: 60 * 60 * 24,
