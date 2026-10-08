@@ -1,28 +1,14 @@
-"use client";
-
 import logo from "@/assets/logo.png";
 import ThemeToggle from "@/components/ThemeToggle";
-import { UserButton } from "@clerk/nextjs";
-import { dark } from "@clerk/themes";
-import { CreditCard } from "lucide-react";
-import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
-import { useSyncExternalStore } from "react";
+import UserMenu from "./UserMenu";
 
-const subscribeToNothing = () => () => {};
+interface NavbarProps {
+  user: { name: string; email: string };
+}
 
-export default function Navbar() {
-  const { theme, resolvedTheme } = useTheme();
-  const isMounted = useSyncExternalStore(
-    subscribeToNothing,
-    () => true,
-    () => false,
-  );
-
-  // Only apply Clerk dark theme after hydration to prevent mismatch
-  const clerkTheme = isMounted && (theme === "dark" || resolvedTheme === "dark") ? dark : undefined;
-
+export default function Navbar({ user }: NavbarProps) {
   return (
     <header className="shadow-sm">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 p-3">
@@ -40,26 +26,7 @@ export default function Navbar() {
         </Link>
         <div className="flex items-center gap-3">
           <ThemeToggle />
-          <UserButton
-            afterSignOutUrl="/sign-in"
-            appearance={{
-              baseTheme: clerkTheme,
-              elements: {
-                avatarBox: {
-                  width: 35,
-                  height: 35,
-                },
-              },
-            }}
-          >
-            <UserButton.MenuItems>
-              <UserButton.Link
-                label="Billing"
-                labelIcon={<CreditCard className="size-4" />}
-                href="/billing"
-              />
-            </UserButton.MenuItems>
-          </UserButton>
+          <UserMenu user={user} />
         </div>
       </div>
     </header>

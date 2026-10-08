@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 import { resumeDataInclude } from "@/lib/types";
-import { auth } from "@clerk/nextjs/server";
+import { getAuthUserId } from "@/lib/session";
 import { Metadata } from "next";
 import ResumeItem from "./ResumeItem";
 import CreateResumeButton from "./CreateResumeButton";
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  const { userId } = await auth();
+  const userId = await getAuthUserId();
 
   if (!userId) {
     return null;

@@ -10,7 +10,7 @@ description: Safe Prisma 7 schema and data changes on this repo's Postgres - add
 - Schema: `prisma/schema.prisma`. Migrations: `prisma/migrations/` (history is committed; keep using migrations, not `db push`).
 - CLI config: `prisma.config.ts` reads `POSTGRES_URL_NON_POOLING` (direct URL) for migrations.
 - Runtime: `src/lib/prisma.ts` uses `@prisma/adapter-pg`. The client is generated into `/generated` (git-ignored) by `postinstall`.
-- Models: `Resume`, `WorkExperience`, `Education` (cascade on resume delete), `UserSubscription` (written only by the Stripe webhook). `userId` is the Clerk user id; there is no local user table.
+- Models: `Resume`, `WorkExperience`, `Education` (cascade on resume delete), `UserSubscription` (written only by the Stripe webhook). `userId` is the Better Auth `User.id`; the Better Auth tables (`User`, `Session`, `Account`, `Verification`) are owned by Better Auth.
 
 ## Rules
 

@@ -1,7 +1,7 @@
 # AGENTS.md
 
 Shared rules for every coding agent on this repo (v0, Claude Code, Codex, Hermes, humans).
-Stack: Next.js 16 (App Router, `src/proxy.ts`), React 19, TypeScript, Prisma 7 (`@prisma/adapter-pg`) on Postgres, Clerk, Stripe, OpenAI, Vercel Blob, Tailwind v3 + shadcn, npm, Vitest (+ Playwright from Sprint 0) in `qa/`.
+Stack: Next.js 16 (App Router, `src/proxy.ts`), React 19, TypeScript, Prisma 7 (`@prisma/adapter-pg`) on Postgres, Better Auth, Stripe, OpenAI, Vercel Blob, Tailwind v3 + shadcn, npm, Vitest (+ Playwright from Sprint 0) in `qa/`.
 
 ## Load only what the task needs
 
@@ -19,7 +19,7 @@ Read this file, then open **only** the skill that matches the task. Skills link 
 | Where a file goes, imports between features | `.agents/skills/feature-slices/` |
 | Smells, seams, health check, refactor planning | `.agents/skills/architecture-review/` |
 | Prisma schema, migrations or data changes | `.agents/skills/db-schema-change/` |
-| Sign-in, sessions, public routes, plan gating (Clerk) | `.agents/skills/clerk-auth-ops/` |
+| Sign-in, sessions, public routes, plan gating (Better Auth) | `.agents/skills/auth-ops/` |
 | Vercel CLI, env, previews, logs, production release | `.agents/skills/vercel-ops/` |
 | End of sprint: lessons into rules | `.agents/skills/sprint-retro/` |
 

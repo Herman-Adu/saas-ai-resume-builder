@@ -1,35 +1,38 @@
 "use server";
 
 import { env } from "@/env";
+import prisma from "@/lib/prisma";
+import { getSession } from "@/lib/session";
 import stripe from "@/lib/stripe";
-import { currentUser } from "@clerk/nextjs/server";
 
 export async function createCheckoutSession(priceId: string) {
-  const user = await currentUser();
+  const session = await getSession();
 
-  if (!user) {
+  if (!session) {
     throw new Error("Unauthorized");
   }
 
-  const stripeCustomerId = user.privateMetadata.stripeCustomerId as
-    | string
-    | undefined;
+  const { id: userId, email } = session.user;
 
-  const session = await stripe.checkout.sessions.create({
+  const existingSubscription = await prisma.userSubscription.findUnique({
+    where: { userId },
+    select: { stripeCustomerId: true },
+  });
+  const stripeCustomerId = existingSubscription?.stripeCustomerId;
+
+  const checkout = await stripe.checkout.sessions.create({
     line_items: [{ price: priceId, quantity: 1 }],
     mode: "subscription",
     success_url: `${env.NEXT_PUBLIC_BASE_URL}/billing/success`,
     cancel_url: `${env.NEXT_PUBLIC_BASE_URL}/billing`,
     customer: stripeCustomerId,
-    customer_email: stripeCustomerId
-      ? undefined
-      : user.emailAddresses[0].emailAddress,
+    customer_email: stripeCustomerId ? undefined : email,
     metadata: {
-      userId: user.id,
+      userId,
     },
     subscription_data: {
       metadata: {
-        userId: user.id,
+        userId,
       },
     },
     custom_text: {
@@ -42,9 +45,9 @@ export async function createCheckoutSession(priceId: string) {
     },
   });
 
-  if (!session.url) {
+  if (!checkout.url) {
     throw new Error("Failed to create checkout session");
   }
 
-  return session.url;
+  return checkout.url;
 }

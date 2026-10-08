@@ -1,7 +1,6 @@
 import { env } from "@/env";
 import prisma from "@/lib/prisma";
 import stripe from "@/lib/stripe";
-import { clerkClient } from "@clerk/nextjs/server";
 import { NextRequest } from "next/server";
 import Stripe from "stripe";
 
@@ -23,9 +22,6 @@ export async function POST(req: NextRequest) {
     console.log(`Received event: ${event.type}`, event.data.object);
 
     switch (event.type) {
-      case "checkout.session.completed":
-        await handleSessionCompleted(event.data.object);
-        break;
       case "customer.subscription.created":
       case "customer.subscription.updated":
         await handleSubscriptionCreatedOrUpdated(event.data.object.id);
@@ -43,22 +39,6 @@ export async function POST(req: NextRequest) {
     console.error(error);
     return new Response("Internal server error", { status: 500 });
   }
-}
-
-async function handleSessionCompleted(session: Stripe.Checkout.Session) {
-  const userId = session.metadata?.userId;
-
-  if (!userId) {
-    throw new Error("User ID is missing in session metadata");
-  }
-
-  await (
-    await clerkClient()
-  ).users.updateUserMetadata(userId, {
-    privateMetadata: {
-      stripeCustomerId: session.customer as string,
-    },
-  });
 }
 
 async function handleSubscriptionCreatedOrUpdated(subscriptionId: string) {

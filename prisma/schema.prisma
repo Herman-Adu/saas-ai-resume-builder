@@ -92,7 +92,7 @@ model UserSubscription {
   @@map("user_subscriptions")
 }
 
-// Better Auth core tables (additive; replaces Clerk once Sprint 1 finishes).
+// Better Auth core tables.
 model User {
   id            String    @id
   name          String
