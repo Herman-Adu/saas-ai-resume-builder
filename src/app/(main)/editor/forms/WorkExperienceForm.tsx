@@ -20,6 +20,7 @@ import {
 } from "@/lib/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, GripHorizontal, Plus, Trash2 } from "lucide-react";
+import SectionVisibilityToggle from "../SectionVisibilityToggle";
 import { useEffect } from "react";
 import {
   useFieldArray,
@@ -123,6 +124,12 @@ export default function WorkExperienceForm({
         <p className="text-sm text-muted-foreground">
           Add as many work experiences as you like.
         </p>
+        <SectionVisibilityToggle
+          section="workExperiences"
+          label="work experience"
+          resumeData={resumeData}
+          setResumeData={setResumeData}
+        />
       </div>
       <Form {...form}>
         <form className="space-y-3">

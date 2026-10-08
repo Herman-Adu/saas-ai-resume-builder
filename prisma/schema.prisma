@@ -36,6 +36,11 @@ model Resume {
   // content_model migration, which Prisma cannot express in the schema.
   isMaster Boolean @default(false)
 
+  // A copy made by Tailor. Counted separately from base resumes for plan limits.
+  isTailored     Boolean  @default(false)
+  // Whole sections left out of the preview and PDF (see src/lib/tailoring.ts).
+  hiddenSections String[] @default([])
+
   workExperiences WorkExperience[]
   educations      Education[]
   links           ResumeLink[]

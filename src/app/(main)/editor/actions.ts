@@ -104,7 +104,9 @@ export async function saveResume(values: ResumeValues) {
 
   // Check resume count for non-premium users, dont block for updating resume, via check if its a new resume id
   if (!id) {
-    const resumeCount = await prisma.resume.count({ where: { userId } });
+    const resumeCount = await prisma.resume.count({
+      where: { userId, isTailored: false },
+    });
 
     if (!canCreateResume(subscriptionLevel, resumeCount)) {
       throw new Error(

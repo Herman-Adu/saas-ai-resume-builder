@@ -22,6 +22,19 @@ export const optionalHttpUrl = z
 
 const hiddenFlag = z.boolean().optional();
 
+export const hideableSections = [
+  "summary",
+  "workExperiences",
+  "educations",
+  "links",
+  "certifications",
+  "languages",
+  "projects",
+  "skills",
+] as const;
+
+export type HideableSection = (typeof hideableSections)[number];
+
 export const generalInfoSchema = z.object({
   title: optionalString,
   description: optionalString,
@@ -176,6 +189,7 @@ export const resumeSchema = z.object({
   ...summarySchema.shape,
   colorHex: optionalString,
   borderStyle: optionalString,
+  hiddenSections: z.array(z.enum(hideableSections)).optional(),
 });
 
 export type ResumeValues = Omit<z.infer<typeof resumeSchema>, "photo"> & {
