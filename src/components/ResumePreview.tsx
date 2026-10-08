@@ -9,6 +9,12 @@ import { formatDate } from "date-fns";
 import Image from "next/image";
 import { useEffect, useMemo, useRef } from "react";
 import { Badge } from "./ui/badge";
+import {
+  CertificationsSection,
+  LanguagesSection,
+  LinksSection,
+  ProjectsSection,
+} from "./ResumeExtraSections";
 import { BorderStyles } from "@/app/(main)/editor/BorderStyleButton";
 
 interface ResumePreviewProps {
@@ -48,8 +54,12 @@ export default function ResumePreview({
         <PersonalInfoHeader resumeData={resumeData} />
         <SummarySection resumeData={resumeData} />
         <WorkExperienceSection resumeData={resumeData} />
+        <ProjectsSection resumeData={resumeData} />
         <EducationSection resumeData={resumeData} />
+        <CertificationsSection resumeData={resumeData} />
         <SkillsSection resumeData={resumeData} />
+        <LanguagesSection resumeData={resumeData} />
+        <LinksSection resumeData={resumeData} />
       </div>
     </div>
   );

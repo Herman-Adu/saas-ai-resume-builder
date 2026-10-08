@@ -37,3 +37,9 @@ The v0 GitHub app lacks the `workflows` permission. The user accepts it in GitHu
 
 ## Protected routes return 307 to `/sign-in` in headless tests
 `src/proxy.ts` redirects every non-public route to `/sign-in` when there is no session cookie. Smoke-test public pages and the redirect; sign up a throwaway account for signed-in checks (see `auth-ops`).
+
+## `npm run build` fails with "Invalid environment variables" for `/robots.txt`
+`next build` does not read `.env.development.local`, so `src/env.ts` rejects the empty env. Load the project env for that one command and never print it: `set -a && source /vercel/share/.env.project && set +a && npm run build`.
+
+## A reload test loses data that was just typed
+Autosave is debounced, and a fixed `page.waitForTimeout` can end before the save lands (a cold dev compile makes it slower). Wait for the save request itself with `page.waitForResponse` (POST to `/editor`), then reload.

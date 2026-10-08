@@ -19,7 +19,7 @@ import {
   WorkExperienceValues,
 } from "@/lib/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff, GripHorizontal, Plus, Trash2 } from "lucide-react";
+import { Eye, EyeOff, GripHorizontal, Plus } from "lucide-react";
 import SectionVisibilityToggle from "../SectionVisibilityToggle";
 import { useEffect } from "react";
 import {
@@ -48,6 +48,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { cn } from "@/lib/utils";
 import GenerateWorkExperienceButton from "./GenerateWorkExperienceButton";
+import BulletRowShell from "./BulletRowShell";
 
 export default function WorkExperienceForm({
   resumeData,
@@ -192,7 +193,14 @@ function BulletRow({ form, index, bulletIndex, onRemove }: BulletRowProps) {
   });
 
   return (
-    <div className="flex items-start gap-1">
+    <BulletRowShell
+      bulletIndex={bulletIndex}
+      hidden={Boolean(bulletHidden)}
+      onToggleHidden={() =>
+        form.setValue(`${path}.hidden`, !bulletHidden, { shouldDirty: true })
+      }
+      onRemove={onRemove}
+    >
       <FormField
         control={form.control}
         name={`${path}.text`}
@@ -212,36 +220,7 @@ function BulletRow({ form, index, bulletIndex, onRemove }: BulletRowProps) {
           </FormItem>
         )}
       />
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        aria-pressed={Boolean(bulletHidden)}
-        aria-label={
-          bulletHidden
-            ? `Show bullet ${bulletIndex + 1}`
-            : `Hide bullet ${bulletIndex + 1}`
-        }
-        onClick={() =>
-          form.setValue(`${path}.hidden`, !bulletHidden, { shouldDirty: true })
-        }
-      >
-        {bulletHidden ? (
-          <EyeOff className="size-4" />
-        ) : (
-          <Eye className="size-4" />
-        )}
-      </Button>
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        aria-label={`Remove bullet ${bulletIndex + 1}`}
-        onClick={onRemove}
-      >
-        <Trash2 className="size-4" />
-      </Button>
-    </div>
+    </BulletRowShell>
   );
 }
 

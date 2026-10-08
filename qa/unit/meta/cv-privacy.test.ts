@@ -3,6 +3,7 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 const files = [
+  "src/app/(main)/editor/actions.ts",
   "src/app/(main)/editor/forms/actions.ts",
   "src/app/(main)/resumes/importCvAction.ts",
   "src/lib/cv-import.ts",
