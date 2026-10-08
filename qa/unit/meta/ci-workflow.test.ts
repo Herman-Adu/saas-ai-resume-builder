@@ -30,6 +30,22 @@ describe("CI app job", () => {
     expect(status).toBeLessThan(appJob.indexOf("npm run build"));
   });
 
+  it("turns auth rate limiting off for the tests, and only there", () => {
+    expect(appJob).toMatch(/E2E_DISABLE_RATE_LIMIT: "true"/);
+    expect(workflow.match(/E2E_DISABLE_RATE_LIMIT/g)).toHaveLength(1);
+
+    const auth = read("src/lib/auth.ts");
+    expect(auth).toMatch(/E2E_DISABLE_RATE_LIMIT === "true"/);
+    expect(auth).toMatch(/!process\.env\.VERCEL\b/);
+    expect(auth).not.toMatch(/rateLimit:\s*\{\s*enabled:\s*true/);
+  });
+
+  it("trusts the test server origin only under the same Vercel-excluded flag", () => {
+    const auth = read("src/lib/auth.ts");
+    expect(auth).toMatch(/runsE2eTests\s*\?\s*optional\(process\.env\.NEXT_PUBLIC_BASE_URL\)/);
+    expect(auth).toMatch(/const runsE2eTests =\s*process\.env\.E2E_DISABLE_RATE_LIMIT === "true" && !process\.env\.VERCEL/);
+  });
+
   it("never changes the shared database schema", () => {
     expect(workflow).not.toMatch(/migrate (deploy|dev|reset)/);
     expect(workflow).not.toMatch(/db push/);

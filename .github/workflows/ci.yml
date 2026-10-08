@@ -39,6 +39,8 @@ jobs:
       POSTGRES_PRISMA_URL: ${{ secrets.POSTGRES_PRISMA_URL }}
       POSTGRES_URL_NON_POOLING: ${{ secrets.POSTGRES_URL_NON_POOLING }}
       NEXT_PUBLIC_BASE_URL: http://localhost:3000
+      # The production build rate-limits sign-up per IP; every test signs up from one runner IP.
+      E2E_DISABLE_RATE_LIMIT: "true"
       # Required by src/env.ts at build, but no browser test calls these services.
       POSTGRES_URL: ${{ secrets.POSTGRES_PRISMA_URL }}
       POSTGRES_URL_NO_SSL: ${{ secrets.POSTGRES_PRISMA_URL }}
