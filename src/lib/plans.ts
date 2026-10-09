@@ -1,4 +1,5 @@
 import { canUseTemplate, tailoredResumeLimits } from "./permissions";
+import { resumeTemplates } from "./templates";
 import type { SubscriptionLevel } from "./subscription";
 
 export interface Plan {
@@ -52,7 +53,7 @@ export function planFeatures(plan: Plan): string[] {
     "Live preview and autosave",
     "Print-ready PDF export",
     canUseTemplate(plan.id, "modern")
-      ? "All four templates, including an ATS-safe one"
+      ? `All ${resumeTemplates.length} templates, including an ATS-safe one`
       : "Classic template",
     ...(tailoredLimit > 0
       ? [

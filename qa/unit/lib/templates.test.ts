@@ -9,8 +9,19 @@ import {
 import { resumeSchema } from "@/lib/validation";
 
 describe("template catalogue", () => {
-  it("has the four templates, Classic first and as the default", () => {
-    expect(resumeTemplates).toEqual(["classic", "modern", "compact", "minimal"]);
+  it("has the ten templates, Classic first and as the default", () => {
+    expect(resumeTemplates).toEqual([
+      "classic",
+      "modern",
+      "compact",
+      "minimal",
+      "executive",
+      "creative",
+      "graduate",
+      "academic",
+      "tech",
+      "elegant",
+    ]);
     expect(defaultTemplate).toBe("classic");
   });
 
@@ -40,8 +51,8 @@ describe("canUseTemplate", () => {
     expect(canUseTemplate("pro_plus", "classic")).toBe(true);
   });
 
-  it("keeps the other three for Pro and Pro Plus", () => {
-    for (const template of ["modern", "compact", "minimal"] as const) {
+  it("keeps every other template for Pro and Pro Plus", () => {
+    for (const template of resumeTemplates.filter((id) => id !== "classic")) {
       expect(canUseTemplate("free", template)).toBe(false);
       expect(canUseTemplate("pro", template)).toBe(true);
       expect(canUseTemplate("pro_plus", template)).toBe(true);

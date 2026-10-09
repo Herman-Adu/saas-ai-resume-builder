@@ -57,9 +57,9 @@ describe("planFeatures", () => {
   });
 
   it.each(plans)(
-    "$id promises all four templates only if permissions.ts allows them",
+    "$id promises every template only if permissions.ts allows them",
     (plan) => {
-      const promised = /all four templates/i.test(planFeatures(plan).join(" "));
+      const promised = /all 10 templates/i.test(planFeatures(plan).join(" "));
       expect(promised).toBe(canUseTemplate(plan.id, "modern"));
     },
   );

@@ -3,6 +3,12 @@ export const resumeTemplates = [
   "modern",
   "compact",
   "minimal",
+  "executive",
+  "creative",
+  "graduate",
+  "academic",
+  "tech",
+  "elegant",
 ] as const;
 
 export type ResumeTemplate = (typeof resumeTemplates)[number];
@@ -33,6 +39,36 @@ export const templateOptions: {
     id: "minimal",
     label: "Minimal",
     description: "Plain black text with no photo, built for applicant tracking systems.",
+  },
+  {
+    id: "executive",
+    label: "Executive",
+    description: "Serif type and spaced capitals for senior roles.",
+  },
+  {
+    id: "creative",
+    label: "Creative",
+    description: "A tinted side panel for contact, skills and links.",
+  },
+  {
+    id: "graduate",
+    label: "Graduate",
+    description: "Education first, for early-career and career-change CVs.",
+  },
+  {
+    id: "academic",
+    label: "Academic",
+    description: "Education and projects first, with no photo.",
+  },
+  {
+    id: "tech",
+    label: "Tech",
+    description: "Skills up front, with monospaced headings.",
+  },
+  {
+    id: "elegant",
+    label: "Elegant",
+    description: "A centred header and refined serif type.",
   },
 ];
 

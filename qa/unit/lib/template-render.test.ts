@@ -81,9 +81,9 @@ describe.each(resumeTemplates)("%s template", (template) => {
 });
 
 describe("template differences", () => {
-  it("applies the accent colour to Classic, Modern and Compact", () => {
-    for (const template of ["classic", "modern", "compact"] as const) {
-      expect(render(template)).toContain("#ff0000");
+  it("applies the accent colour to every template except Minimal", () => {
+    for (const template of resumeTemplates.filter((id) => id !== "minimal")) {
+      expect(render(template), template).toContain("#ff0000");
     }
   });
 
@@ -93,10 +93,38 @@ describe("template differences", () => {
     expect(html).not.toContain("<img");
   });
 
-  it("shows the photo in the other three", () => {
-    for (const template of ["classic", "modern", "compact"] as const) {
-      expect(render(template)).toContain("<img");
+  it("leaves the photo out of Academic as well, by convention", () => {
+    expect(render("academic")).not.toContain("<img");
+  });
+
+  it("shows the photo in every other template", () => {
+    const withoutPhoto = ["minimal", "academic"];
+    for (const template of resumeTemplates.filter(
+      (id) => !withoutPhoto.includes(id),
+    )) {
+      expect(render(template), template).toContain("<img");
     }
+  });
+
+  it("puts Education before Work experience for Graduate and Academic", () => {
+    for (const template of ["graduate", "academic"] as const) {
+      const html = render(template);
+      expect(html.indexOf("Education"), template).toBeGreaterThan(-1);
+      expect(html.indexOf("Education"), template).toBeLessThan(
+        html.indexOf("Work experience"),
+      );
+    }
+  });
+
+  it("puts Skills before Work experience for Tech", () => {
+    const html = render("tech");
+    expect(html.indexOf("Skills")).toBeGreaterThan(-1);
+    expect(html.indexOf("Skills")).toBeLessThan(html.indexOf("Work experience"));
+  });
+
+  it("keeps Classic order: Work experience before Education", () => {
+    const html = render("classic");
+    expect(html.indexOf("Work experience")).toBeLessThan(html.indexOf("Education"));
   });
 
   it("marks the template on the page so tests and print styles can find it", () => {
