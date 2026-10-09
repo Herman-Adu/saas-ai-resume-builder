@@ -21,7 +21,14 @@ import { useReactToPrint } from "react-to-print";
 import { formatDate } from "date-fns";
 import Link from "next/link";
 import { useRef, useState, useTransition } from "react";
-import { FileText, MoreVertical, Printer, Star, Trash2 } from "lucide-react";
+import {
+  FileText,
+  GraduationCap,
+  MoreVertical,
+  Printer,
+  Star,
+  Trash2,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -152,6 +159,17 @@ function MoreMenu({
               >
                 <FileText className="size-4" />
                 Cover letter
+              </Link>
+            </DropdownMenuItem>
+          )}
+          {hasJob && (
+            <DropdownMenuItem asChild>
+              <Link
+                href={`/resumes/${resumeId}/mentor-brief`}
+                className="flex items-center gap-2"
+              >
+                <GraduationCap className="size-4" />
+                Mentor brief
               </Link>
             </DropdownMenuItem>
           )}

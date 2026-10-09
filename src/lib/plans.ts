@@ -70,7 +70,12 @@ export function planFeatures(plan: Plan): string[] {
           "AI cover letter for each tailored resume, editable and printable",
         ]
       : []),
-    ...(plan.customizations ? ["Colour and border customisation"] : []),
+    ...(plan.customizations
+      ? [
+          "Colour and border customisation",
+          "Company mentor brief for each tailored job",
+        ]
+      : []),
   ];
 }
 

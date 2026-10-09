@@ -216,6 +216,7 @@ model Job {
 
   resumes     Resume[]
   coverLetter CoverLetter?
+  mentorBrief MentorBrief?
 
   @@index([userId, createdAt])
   @@map("jobs")
@@ -234,6 +235,32 @@ model CoverLetter {
 
   @@index([userId])
   @@map("cover_letters")
+}
+
+// The company mentor brief for a job: what the role tests, where the CV is weak
+// against the post and what to revise. Holds the generated text only, no CV copy.
+model MentorBrief {
+  id        String   @id @default(cuid())
+  userId    String
+  jobId     String   @unique
+  content   Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  job Job @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("mentor_briefs")
+}
+
+// One row per mentor brief AI run, for the daily limit. Holds no CV or job text.
+model MentorBriefRun {
+  id        String   @id @default(cuid())
+  userId    String
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@map("mentor_brief_runs")
 }
 
 // One row per cover letter AI run, for the daily limit. Holds no CV or job text.

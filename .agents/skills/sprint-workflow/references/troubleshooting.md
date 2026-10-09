@@ -18,13 +18,13 @@ Peer ranges in this repo (react-color and others) don't all declare React 19. Us
 The client is generated into `/generated` (git-ignored) by `postinstall`. Run `npx prisma generate`. Prisma CLI commands read `POSTGRES_URL_NON_POOLING` via `prisma.config.ts`, so load the env first (see `db-schema-change`).
 
 ## Playwright: no browser / `libnspr4.so` missing
-`npx playwright install chromium`. The sandbox is Amazon Linux 2023 (`dnf`, no `apt-get`), so `playwright install-deps` cannot work. Install the libraries with `sudo -n dnf install -y nspr nss nss-util atk at-spi2-atk cups-libs libdrm libxkbcommon libXcomposite libXdamage libXfixes libXrandr mesa-libgbm alsa-lib pango cairo`, then confirm with a one-line `chromium.launch()`. If that fails, report the check as blocked; don't loop.
+This only happens in the v0 sandbox: a reset wipes the Chromium download and the system libraries, while local machines and CI keep theirs. `scripts/ensure-browser.mjs` (`npm run browser:ready`) repairs it, and every `test:e2e|smoke|seo|axe|authed` script runs it first via a `pretest:*` hook. Outside the sandbox (no `/vercel/share/.env.project`) it exits at once and changes nothing. Run it by hand after a reset too. What it does: `npx playwright install chromium`. The sandbox is Amazon Linux 2023 (`dnf`, no `apt-get`), so `playwright install-deps` cannot work. Install the libraries with `sudo -n dnf install -y nspr nss nss-util atk at-spi2-atk cups-libs libdrm libxkbcommon libXcomposite libXdamage libXfixes libXrandr mesa-libgbm alsa-lib pango cairo`, then confirm with a one-line `chromium.launch()`. If that fails, report the check as blocked; don't loop.
 
 ## Port 3000 busy when the browser tests start
 The v0 preview dev server already owns it. Point Playwright at the running server (`reuseExistingServer`) instead of starting a second one. If it still can't run, stop and report it; never push unchecked.
 
 ## Signed-in test: server action returns 500, `Cannot read properties of undefined (reading 'count')`
-The long-running dev server loaded the Prisma client before `prisma generate` ran for a new model, so `prisma.<model>` is undefined there. Unit tests mock Prisma and won't show it. After any schema change, run `npx prisma generate`, then restart `next dev` (`pkill -f "next dev"`; Playwright starts a fresh one) before the browser tests. To see why a server action failed, unzip the failing test's `trace.zip` and read the POST response body in `resources/`; the dev log file doesn't capture it.
+The long-running dev server loaded the Prisma client before `prisma generate` ran for a new model, so `prisma.<model>` is undefined there. Unit tests mock Prisma and won't show it. After any schema change, run `npx prisma generate`, then restart `next dev` before the browser tests: `pkill -f "next dev"`, then start `npm run dev` with the Bash tool in the background (v0 does not restart it; Playwright reuses whatever is on port 3000). The same stale client shows up as "This page couldn't load" on every page that reads the new model, even a 404 check (seen in S22: 8 failures, all gone after the restart). To see why a server action failed, unzip the failing test's `trace.zip` and read the POST response body in `resources/`; the dev log file doesn't capture it.
 
 ## Vitest can't resolve `@/...`
 `vitest` ran without `--config qa/config/vitest.config.mts`. Use the `npm run test:*` scripts.
@@ -58,6 +58,15 @@ Seen in S13: a smoke test failed in CI on a docs-only branch and passed on a rer
 
 ## A reload test loses data that was just typed
 Autosave is debounced, and a fixed `page.waitForTimeout` can end before the save lands (a cold dev compile makes it slower). Wait for the save request itself with `page.waitForResponse` (POST to `/editor`), then reload.
+
+## Migration SQL fails with `relation "Resume" does not exist`
+Prisma models can be mapped to other table names (`Resume` is the table `resumes`). Read the model's `@@map` in `prisma/schema.prisma` before writing SQL. If the apply fails, nothing is applied: `prisma migrate resolve --rolled-back <name>`, fix the SQL, then `migrate deploy` again (seen in S18).
+
+## A seed helper writes `null` into a column that has a default
+`INSERT ... VALUES (null)` overrides the column default and fails a NOT NULL. In `qa/e2e/support/db.ts` use `COALESCE($n, <default>)` for optional seed values (seen in S19).
+
+## CI-only failure: a text assertion matches two elements in `#pricing`
+Seen in S13 and again in S18 to S20, mobile project only: streamed copy briefly exists twice while the page hydrates, so `getByText` is strict-mode ambiguous. Assert with `getByRole` (it skips hidden nodes) and never `getByText` for plan copy. CI now uploads the Playwright traces for a failed run (`gh run download <id> -R <org>/<repo> -D <fresh dir>`, read `trace.zip` and the page snapshot); use that before guessing.
 
 ## A page 404s right after its save action runs
 A server action that calls `revalidatePath` for the page the user is editing can make that page render a 404 in the browser test (the save itself succeeded and the toast appeared). Have the action return the saved data and let the client keep it in state; revalidate only other pages that list the data. Check the failing screenshot for a 404 body before assuming the save broke.

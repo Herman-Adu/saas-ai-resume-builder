@@ -38,6 +38,7 @@ Paste these into the product pages in the Stripe dashboard (Product catalogue > 
 - Tailor to a pasted job post with AI suggestions you approve
 - AI cover letter for each tailored resume, editable and printable
 - Colour and border customisation
+- Company mentor brief for each tailored job
 
 ## Free
 
