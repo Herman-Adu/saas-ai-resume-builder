@@ -56,6 +56,12 @@ describe("planFeatures", () => {
     expect(byId("pro_plus").join(" ")).toMatch(/import your CV/i);
   });
 
+  it("only promises AI job tailoring from pro up, because it runs the AI", () => {
+    expect(byId("free").join(" ")).not.toMatch(/job post/i);
+    expect(byId("pro").join(" ")).toMatch(/job post/i);
+    expect(byId("pro_plus").join(" ")).toMatch(/job post/i);
+  });
+
   it.each(plans)(
     "$id promises every template only if permissions.ts allows them",
     (plan) => {

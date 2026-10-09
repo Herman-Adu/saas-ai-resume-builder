@@ -63,6 +63,25 @@ export function cvImportWindowStart(now: Date = new Date()) {
   return new Date(now.getTime() - 24 * 60 * 60 * 1000);
 }
 
+// Runs of the "tailor to a job" AI a day. Pro Plus is capped rather than
+// unlimited so AI cost cannot run away.
+export const jobTailorDailyLimits: Record<SubscriptionLevel, number> = {
+  free: 0,
+  pro: 5,
+  pro_plus: 30,
+};
+
+export function canTailorToJob(subscriptionLevel: SubscriptionLevel) {
+  return canUseAITools(subscriptionLevel) && canTailor(subscriptionLevel);
+}
+
+export function canTailorToJobToday(
+  subscriptionLevel: SubscriptionLevel,
+  runsInLastDay: number,
+) {
+  return runsInLastDay < jobTailorDailyLimits[subscriptionLevel];
+}
+
 // Classic is free for everyone; the other templates need a paid plan.
 export function canUseTemplate(
   subscriptionLevel: SubscriptionLevel,

@@ -6,12 +6,15 @@ import ResumeItem from "./ResumeItem";
 import CreateResumeButton from "./CreateResumeButton";
 import ImportCvButton from "./ImportCvButton";
 import TailorButton from "./TailorButton";
+import JobTailorButton, { type EntryLabels } from "./JobTailorButton";
+import { parseStoredBullets } from "@/lib/bullets";
 import { getUserSubscriptionLevel } from "@/lib/subscription";
 import {
   canCreateResume,
   canCreateTailoredResume,
   canImportCv,
   canTailor,
+  canTailorToJob,
 } from "@/lib/permissions";
 
 export const metadata: Metadata = {
@@ -47,6 +50,26 @@ export default async function Page() {
   const baseCount = resumes.filter((resume) => !resume.isTailored).length;
   const tailoredCount = resumes.length - baseCount;
 
+  const master = resumes.find((resume) => resume.isMaster);
+  const entryLabels: EntryLabels = Object.fromEntries(
+    [
+      ...(master?.workExperiences ?? []).map((entry) => ({
+        ...entry,
+        label: [entry.position, entry.company].filter(Boolean).join(" at "),
+      })),
+      ...(master?.projects ?? []).map((entry) => ({
+        ...entry,
+        label: entry.name ?? "Project",
+      })),
+    ].map((entry) => [
+      entry.id,
+      {
+        label: entry.label || "Entry",
+        bullets: parseStoredBullets(entry.bullets).map((bullet) => bullet.text),
+      },
+    ]),
+  );
+
   return (
     <main className="mx-auto w-full max-w-7xl space-y-6 px-3 py-6">
       <div className="flex flex-wrap items-center justify-center gap-3">
@@ -65,6 +88,14 @@ export default async function Page() {
             canCreateTailoredResume(subscriptionLevel, tailoredCount)
           }
           hasMaster={resumes.some((resume) => resume.isMaster)}
+        />
+        <JobTailorButton
+          canTailor={
+            canTailorToJob(subscriptionLevel) &&
+            canCreateTailoredResume(subscriptionLevel, tailoredCount)
+          }
+          hasMaster={Boolean(master)}
+          entryLabels={entryLabels}
         />
       </div>
       <div className="space-y-1">

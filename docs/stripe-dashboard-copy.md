@@ -17,6 +17,7 @@ Paste these into the product pages in the Stripe dashboard (Product catalogue > 
 - Tailor to each job, up to 10 tailored resumes
 - AI-written summary and work experience
 - Import your CV from a PDF
+- Tailor to a pasted job post with AI suggestions you approve
 
 ## Pro Plus
 
@@ -33,6 +34,7 @@ Paste these into the product pages in the Stripe dashboard (Product catalogue > 
 - Tailor to each job, unlimited tailored resumes
 - AI-written summary and work experience
 - Import your CV from a PDF
+- Tailor to a pasted job post with AI suggestions you approve
 - Colour and border customisation
 
 ## Free

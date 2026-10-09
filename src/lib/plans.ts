@@ -63,7 +63,11 @@ export function planFeatures(plan: Plan): string[] {
         ]
       : []),
     ...(plan.aiTools
-      ? ["AI-written summary and work experience", "Import your CV from a PDF"]
+      ? [
+          "AI-written summary and work experience",
+          "Import your CV from a PDF",
+          "Tailor to a pasted job post with AI suggestions you approve",
+        ]
       : []),
     ...(plan.customizations ? ["Colour and border customisation"] : []),
   ];
