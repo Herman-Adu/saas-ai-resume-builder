@@ -13,6 +13,12 @@ export default function LandingFooter() {
         </div>
         <nav aria-label="Footer" className="flex flex-wrap gap-x-6 gap-y-2">
           <Link
+            href="/templates"
+            className="text-sm text-muted-foreground hover:text-foreground"
+          >
+            Templates
+          </Link>
+          <Link
             href="/tos"
             className="text-sm text-muted-foreground hover:text-foreground"
           >

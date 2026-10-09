@@ -35,6 +35,12 @@ export default function LandingHeader({ signedIn }: LandingHeaderProps) {
               {section.label}
             </Link>
           ))}
+          <Link
+            href="/templates"
+            className="whitespace-nowrap rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring"
+          >
+            Templates
+          </Link>
         </nav>
 
         <div className="flex items-center gap-2">

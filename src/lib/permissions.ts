@@ -1,5 +1,9 @@
 import { SubscriptionLevel } from "./subscription";
-import { defaultTemplate, type ResumeTemplate } from "./templates";
+import {
+  defaultTemplate,
+  isResumeTemplate,
+  type ResumeTemplate,
+} from "./templates";
 
 export function canCreateResume(
   subscriptionLevel: SubscriptionLevel,
@@ -65,6 +69,18 @@ export function canUseTemplate(
   template: ResumeTemplate,
 ) {
   return template === defaultTemplate || subscriptionLevel !== "free";
+}
+
+// A template picked on the public gallery only applies when this plan may
+// save it, so the first autosave is never refused.
+export function startingTemplate(
+  requested: string | undefined,
+  subscriptionLevel: SubscriptionLevel,
+): ResumeTemplate | undefined {
+  return isResumeTemplate(requested) &&
+    canUseTemplate(subscriptionLevel, requested)
+    ? requested
+    : undefined;
 }
 
 // only pro plus members can use customizations

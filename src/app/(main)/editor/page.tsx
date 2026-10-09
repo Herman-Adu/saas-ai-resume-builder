@@ -1,4 +1,6 @@
+import { startingTemplate } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
+import { getUserSubscriptionLevel } from "@/lib/subscription";
 //import { resumeDataInclude } from "@/lib/types";
 import { getAuthUserId } from "@/lib/session";
 import { Metadata } from "next";
@@ -6,7 +8,7 @@ import ResumeEditor from "./ResumeEditor";
 import { resumeDataInclude } from "@/lib/types";
 
 interface PageProps {
-  searchParams: Promise<{ resumeId?: string }>;
+  searchParams: Promise<{ resumeId?: string; template?: string }>;
 }
 
 export const metadata: Metadata = {
@@ -14,7 +16,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Page({ searchParams }: PageProps) {
-  const { resumeId } = await searchParams;
+  const { resumeId, template } = await searchParams;
 
   const userId = await getAuthUserId();
 
@@ -29,5 +31,14 @@ export default async function Page({ searchParams }: PageProps) {
       })
     : null;
 
-  return <ResumeEditor resumeToEdit={resumeToEdit} />;
+  const initialTemplate = resumeToEdit
+    ? undefined
+    : startingTemplate(template, await getUserSubscriptionLevel(userId));
+
+  return (
+    <ResumeEditor
+      resumeToEdit={resumeToEdit}
+      initialTemplate={initialTemplate}
+    />
+  );
 }
