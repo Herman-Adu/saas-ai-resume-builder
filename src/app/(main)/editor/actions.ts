@@ -6,6 +6,12 @@ import {
   canUseTemplate,
 } from "@/lib/permissions";
 import { parsePhotoPosition, parsePhotoSize } from "@/lib/photo-options";
+import {
+  parseSkillLevels,
+  parseSkillStyle,
+  pruneSkillLevels,
+  sameSkillLevels,
+} from "@/lib/skill-options";
 import { defaultTemplate } from "@/lib/templates";
 import prisma from "@/lib/prisma";
 import { getUserSubscriptionLevel } from "@/lib/subscription";
@@ -43,8 +49,14 @@ export async function saveResume(values: ResumeValues) {
     certifications,
     languages,
     projects,
+    skillLevels: sentSkillLevels,
     ...resumeValues
   } = resumeSchema.parse(values);
+
+  const skillLevels =
+    sentSkillLevels && resumeValues.skills
+      ? pruneSkillLevels(sentSkillLevels, resumeValues.skills)
+      : sentSkillLevels;
 
   const sectionRows = {
     workExperiences: workExperiences?.map((exp, sortOrder) => ({
@@ -140,13 +152,24 @@ export async function saveResume(values: ResumeValues) {
     (resumeValues.photoSize !== undefined &&
       resumeValues.photoSize !== parsePhotoSize(existingResume?.photoSize));
 
+  const changesSkillOptions =
+    (resumeValues.skillsStyle !== undefined &&
+      resumeValues.skillsStyle !==
+        parseSkillStyle(existingResume?.skillsStyle)) ||
+    (skillLevels !== undefined &&
+      !sameSkillLevels(
+        skillLevels,
+        parseSkillLevels(existingResume?.skillLevels),
+      ));
+
   // check if resume has customizations
   const hasCustomizations =
     (resumeValues.borderStyle &&
       resumeValues.borderStyle !== existingResume?.borderStyle) ||
     (resumeValues.colorHex &&
       resumeValues.colorHex !== existingResume?.colorHex) ||
-    changesPhotoOptions;
+    changesPhotoOptions ||
+    changesSkillOptions;
 
   // check user has customizations for subscription level
   if (hasCustomizations && !canUseCustomizations(subscriptionLevel)) {
@@ -194,6 +217,7 @@ export async function saveResume(values: ResumeValues) {
       where: { id },
       data: {
         ...resumeValues,
+        skillLevels,
         photoUrl: newPhotoUrl,
         workExperiences: { deleteMany: {}, create: sectionRows.workExperiences },
         educations: { deleteMany: {}, create: sectionRows.educations },
@@ -208,6 +232,7 @@ export async function saveResume(values: ResumeValues) {
     return prisma.resume.create({
       data: {
         ...resumeValues,
+        skillLevels,
         userId,
         photoUrl: newPhotoUrl,
         workExperiences: { create: sectionRows.workExperiences },

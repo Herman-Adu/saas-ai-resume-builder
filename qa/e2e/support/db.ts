@@ -62,6 +62,8 @@ interface SeedResume {
   isTailored?: boolean;
   job?: SeedJob;
   workExperiences?: SeedWorkExperience[];
+  skills?: string[];
+  template?: string;
 }
 
 async function seedJob(userId: string, job: SeedJob): Promise<string> {
@@ -92,8 +94,8 @@ export async function seedResume(userId: string, resume: SeedResume): Promise<st
 
   await db.query(
     `INSERT INTO resumes
-       (id, "userId", title, "isMaster", "isTailored", "jobId", skills, "updatedAt")
-     VALUES ($1, $2, $3, $4, $5, $6, ARRAY[]::text[], now())`,
+       (id, "userId", title, "isMaster", "isTailored", "jobId", skills, template, "updatedAt")
+     VALUES ($1, $2, $3, $4, $5, $6, $7::text[], $8, now())`,
     [
       id,
       userId,
@@ -101,6 +103,8 @@ export async function seedResume(userId: string, resume: SeedResume): Promise<st
       resume.isMaster ?? false,
       resume.isTailored ?? Boolean(resume.job),
       jobId,
+      resume.skills ?? [],
+      resume.template ?? "classic",
     ],
   );
 

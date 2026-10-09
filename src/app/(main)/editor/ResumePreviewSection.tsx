@@ -3,6 +3,7 @@ import { ResumeValues } from "@/lib/validation";
 import BorderStyleButton from "./BorderStyleButton";
 import ColorPicker from "./ColorPicker";
 import PhotoOptionsButton from "./PhotoOptionsButton";
+import SkillStyleButton from "./SkillStyleButton";
 import TemplatePicker from "./TemplatePicker";
 import { cn } from "@/lib/utils";
 
@@ -39,6 +40,10 @@ export default function ResumePreviewSection({
           }
         />
         <PhotoOptionsButton
+          resumeData={resumeData}
+          onChange={(changes) => setResumeData({ ...resumeData, ...changes })}
+        />
+        <SkillStyleButton
           resumeData={resumeData}
           onChange={(changes) => setResumeData({ ...resumeData, ...changes })}
         />

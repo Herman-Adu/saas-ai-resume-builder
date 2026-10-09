@@ -198,3 +198,82 @@ describe("template differences", () => {
     expect(html).toContain('data-template="classic"');
   });
 });
+
+describe("skill styles", () => {
+  const levels = { TypeScript: 90 };
+
+  function renderSkills(
+    template: ResumeTemplate,
+    overrides: Partial<ResumeValues>,
+  ) {
+    return renderToStaticMarkup(
+      createElement(ResumePreview, {
+        resumeData: { ...resume(template), ...overrides },
+      }),
+    );
+  }
+
+  it("keeps the chips and no levels when nothing is chosen", () => {
+    const html = renderSkills("modern", {});
+    expect(html).toContain('data-skill-style="chips"');
+    expect(html).not.toContain("data-skill-level");
+  });
+
+  it.each(["bars", "dots", "ring"] as const)(
+    "draws %s on a template that shows charts, with the name as real text",
+    (skillsStyle) => {
+      const html = renderSkills("modern", { skillsStyle, skillLevels: levels });
+      expect(html).toContain(`data-skill-style="${skillsStyle}"`);
+      expect(html).toContain('data-skill-level="90"');
+      expect(html).toContain("TypeScript");
+      expect(html).toContain("90%");
+    },
+  );
+
+  it("still lists a skill that has no level", () => {
+    const html = renderSkills("modern", {
+      skillsStyle: "bars",
+      skillLevels: levels,
+    });
+    expect(html).toContain("SQL");
+    expect(html).not.toContain('data-skill-level="undefined"');
+  });
+
+  it("falls back to chips for a chart style on a template without charts", () => {
+    const html = renderSkills("classic", {
+      skillsStyle: "bars",
+      skillLevels: levels,
+    });
+    expect(html).toContain('data-skill-style="chips"');
+    expect(html).not.toContain("data-skill-level");
+  });
+
+  it("renders the plain list as a list with every skill", () => {
+    const html = renderSkills("classic", { skillsStyle: "list" });
+    expect(html).toContain('data-skill-style="list"');
+    expect(html).toContain("<li");
+    expect(html).toContain("TypeScript");
+    expect(html).toContain("SQL");
+  });
+
+  it.each(["minimal", "academic"] as const)(
+    "leaves %s as plain text whatever style is chosen",
+    (template) => {
+      const html = renderSkills(template, {
+        skillsStyle: "ring",
+        skillLevels: levels,
+      });
+      expect(html).not.toContain("data-skill-style");
+      expect(html).not.toContain("data-skill-level");
+    },
+  );
+
+  it("hides the skills when the skills section is hidden", () => {
+    const html = renderSkills("modern", {
+      skillsStyle: "bars",
+      skillLevels: levels,
+      skills: [],
+    });
+    expect(html).not.toContain("data-skill-style");
+  });
+});

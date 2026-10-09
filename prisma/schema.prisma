@@ -60,6 +60,11 @@ model Resume {
   languages       Language[]
   projects        Project[]
   skills          String[]
+  // Optional level (0 to 100) per skill name, and how the skills are drawn.
+  // Checked against src/lib/skill-options.ts; an empty map and "chips" look
+  // exactly like a resume saved before these columns existed.
+  skillLevels     Json    @default("{}")
+  skillsStyle     String  @default("chips")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -6,6 +6,11 @@ import {
   parsePhotoPosition,
   parsePhotoSize,
 } from "./photo-options";
+import {
+  parseSkillLevels,
+  parseSkillStyle,
+  pruneSkillLevels,
+} from "./skill-options";
 import { parseTemplate } from "./templates";
 import { ResumeServerData } from "./types";
 import {
@@ -93,6 +98,11 @@ export function mapToResumeValues(data: ResumeServerData): ResumeValues {
       hidden: project.hidden,
     })),
     skills: data.skills,
+    skillsStyle: parseSkillStyle(data.skillsStyle),
+    skillLevels: pruneSkillLevels(
+      parseSkillLevels(data.skillLevels),
+      data.skills,
+    ),
     borderStyle: data.borderStyle,
     photoShape: isPhotoShape(data.photoShape) ? data.photoShape : undefined,
     photoPosition: parsePhotoPosition(data.photoPosition),
