@@ -1,6 +1,13 @@
 "use client";
 
 import useDimensions from "@/hooks/useDimensions";
+import {
+  effectivePageBackground,
+  fontFamilyFor,
+  pageBackgroundStyle,
+  parseFontPair,
+  parsePageBackground,
+} from "@/lib/page-style";
 import { forOutput } from "@/lib/tailoring";
 import { parseTemplate } from "@/lib/templates";
 import { cn } from "@/lib/utils";
@@ -26,6 +33,11 @@ export default function ResumePreview({
 
   const template = parseTemplate(resumeData.template);
   const { className: layoutClassName, Body } = templateLayouts[template];
+  const background = effectivePageBackground(
+    parsePageBackground(resumeData.pageBackground),
+    template,
+  );
+  const fontPair = parseFontPair(resumeData.fontPair);
 
   return (
     <div
@@ -38,10 +50,18 @@ export default function ResumePreview({
       ref={containerRef}
     >
       <div
-        className={cn(layoutClassName, !width && "invisible")}
+        className={cn(
+          layoutClassName,
+          !width && "invisible",
+          background !== "plain" && "min-h-[1123px] print:min-h-0",
+        )}
         style={{
           zoom: (1 / 794) * width,
+          ...pageBackgroundStyle(background, resumeData.colorHex),
+          fontFamily: fontFamilyFor(fontPair),
         }}
+        data-page-background={background}
+        data-font-pair={fontPair}
         ref={contentRef}
         id="resumePreviewContent"
       >

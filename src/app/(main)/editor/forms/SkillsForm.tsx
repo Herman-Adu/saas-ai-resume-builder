@@ -17,6 +17,7 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
 import SectionVisibilityToggle from "../SectionVisibilityToggle";
+import SkillLevelFields from "./SkillLevelFields";
 
 export default function SkillsForm({
   resumeData,
@@ -84,6 +85,10 @@ export default function SkillsForm({
           />
         </form>
       </Form>
+      <SkillLevelFields
+        resumeData={resumeData}
+        setResumeData={setResumeData}
+      />
     </div>
   );
 }

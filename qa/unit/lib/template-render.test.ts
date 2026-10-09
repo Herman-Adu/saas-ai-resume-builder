@@ -80,6 +80,63 @@ describe.each(resumeTemplates)("%s template", (template) => {
   });
 });
 
+describe("photo options", () => {
+  function renderWith(template: ResumeTemplate, extra: Partial<ResumeValues>) {
+    return renderToStaticMarkup(
+      createElement(ResumePreview, {
+        resumeData: { ...resume(template), ...extra },
+      }),
+    );
+  }
+
+  const photoTemplates = resumeTemplates.filter(
+    (id) => id !== "minimal" && id !== "academic",
+  );
+
+  it("takes the photo shape from the old border style when none is chosen", () => {
+    const html = renderWith("classic", { borderStyle: "circle" });
+    expect(html).toContain('data-photo-shape="circle"');
+    expect(html).toContain("border-radius:9999px");
+  });
+
+  it("lets the photo shape differ from the skill chip shape", () => {
+    const html = renderWith("classic", {
+      borderStyle: "circle",
+      photoShape: "square",
+    });
+    expect(html).toContain('data-photo-shape="square"');
+    expect(html).toContain("border-radius:0px");
+  });
+
+  it("sizes the photo from the chosen size", () => {
+    expect(renderWith("classic", { photoSize: "large" })).toContain('width="132"');
+    expect(renderWith("classic", { photoSize: "small" })).toContain('width="72"');
+    expect(renderWith("classic", {})).toContain('width="100"');
+  });
+
+  it.each(photoTemplates)("marks the photo side on %s", (template) => {
+    expect(renderWith(template, { photoPosition: "right" })).toContain(
+      'data-photo-position="right"',
+    );
+    expect(renderWith(template, {})).toContain('data-photo-position="left"');
+  });
+
+  it("puts the header photo on the right with a reversed row", () => {
+    expect(renderWith("classic", { photoPosition: "right" })).toContain(
+      "flex-row-reverse",
+    );
+    expect(renderWith("classic", {})).not.toContain("flex-row-reverse");
+  });
+
+  it("still leaves the photo out of Minimal and Academic whatever is chosen", () => {
+    for (const template of ["minimal", "academic"] as const) {
+      expect(
+        renderWith(template, { photoPosition: "right", photoSize: "large" }),
+      ).not.toContain("<img");
+    }
+  });
+});
+
 describe("template differences", () => {
   it("applies the accent colour to every template except Minimal", () => {
     for (const template of resumeTemplates.filter((id) => id !== "minimal")) {
@@ -139,5 +196,84 @@ describe("template differences", () => {
       createElement(ResumePreview, { resumeData: missing }),
     );
     expect(html).toContain('data-template="classic"');
+  });
+});
+
+describe("skill styles", () => {
+  const levels = { TypeScript: 90 };
+
+  function renderSkills(
+    template: ResumeTemplate,
+    overrides: Partial<ResumeValues>,
+  ) {
+    return renderToStaticMarkup(
+      createElement(ResumePreview, {
+        resumeData: { ...resume(template), ...overrides },
+      }),
+    );
+  }
+
+  it("keeps the chips and no levels when nothing is chosen", () => {
+    const html = renderSkills("modern", {});
+    expect(html).toContain('data-skill-style="chips"');
+    expect(html).not.toContain("data-skill-level");
+  });
+
+  it.each(["bars", "dots", "ring"] as const)(
+    "draws %s on a template that shows charts, with the name as real text",
+    (skillsStyle) => {
+      const html = renderSkills("modern", { skillsStyle, skillLevels: levels });
+      expect(html).toContain(`data-skill-style="${skillsStyle}"`);
+      expect(html).toContain('data-skill-level="90"');
+      expect(html).toContain("TypeScript");
+      expect(html).toContain("90%");
+    },
+  );
+
+  it("still lists a skill that has no level", () => {
+    const html = renderSkills("modern", {
+      skillsStyle: "bars",
+      skillLevels: levels,
+    });
+    expect(html).toContain("SQL");
+    expect(html).not.toContain('data-skill-level="undefined"');
+  });
+
+  it("falls back to chips for a chart style on a template without charts", () => {
+    const html = renderSkills("classic", {
+      skillsStyle: "bars",
+      skillLevels: levels,
+    });
+    expect(html).toContain('data-skill-style="chips"');
+    expect(html).not.toContain("data-skill-level");
+  });
+
+  it("renders the plain list as a list with every skill", () => {
+    const html = renderSkills("classic", { skillsStyle: "list" });
+    expect(html).toContain('data-skill-style="list"');
+    expect(html).toContain("<li");
+    expect(html).toContain("TypeScript");
+    expect(html).toContain("SQL");
+  });
+
+  it.each(["minimal", "academic"] as const)(
+    "leaves %s as plain text whatever style is chosen",
+    (template) => {
+      const html = renderSkills(template, {
+        skillsStyle: "ring",
+        skillLevels: levels,
+      });
+      expect(html).not.toContain("data-skill-style");
+      expect(html).not.toContain("data-skill-level");
+    },
+  );
+
+  it("hides the skills when the skills section is hidden", () => {
+    const html = renderSkills("modern", {
+      skillsStyle: "bars",
+      skillLevels: levels,
+      skills: [],
+    });
+    expect(html).not.toContain("data-skill-style");
   });
 });

@@ -5,6 +5,14 @@ import {
   canUseCustomizations,
   canUseTemplate,
 } from "@/lib/permissions";
+import { parseFontPair, parsePageBackground } from "@/lib/page-style";
+import { parsePhotoPosition, parsePhotoSize } from "@/lib/photo-options";
+import {
+  parseSkillLevels,
+  parseSkillStyle,
+  pruneSkillLevels,
+  sameSkillLevels,
+} from "@/lib/skill-options";
 import { defaultTemplate } from "@/lib/templates";
 import prisma from "@/lib/prisma";
 import { getUserSubscriptionLevel } from "@/lib/subscription";
@@ -42,8 +50,14 @@ export async function saveResume(values: ResumeValues) {
     certifications,
     languages,
     projects,
+    skillLevels: sentSkillLevels,
     ...resumeValues
   } = resumeSchema.parse(values);
+
+  const skillLevels =
+    sentSkillLevels && resumeValues.skills
+      ? pruneSkillLevels(sentSkillLevels, resumeValues.skills)
+      : sentSkillLevels;
 
   const sectionRows = {
     workExperiences: workExperiences?.map((exp, sortOrder) => ({
@@ -128,12 +142,43 @@ export async function saveResume(values: ResumeValues) {
     throw new Error("Resume not found");
   }
 
+  // The defaults are not a customization, so a new Free resume that sends
+  // them is still allowed.
+  const changesPhotoOptions =
+    (resumeValues.photoShape !== undefined &&
+      resumeValues.photoShape !== (existingResume?.photoShape ?? undefined)) ||
+    (resumeValues.photoPosition !== undefined &&
+      resumeValues.photoPosition !==
+        parsePhotoPosition(existingResume?.photoPosition)) ||
+    (resumeValues.photoSize !== undefined &&
+      resumeValues.photoSize !== parsePhotoSize(existingResume?.photoSize));
+
+  const changesSkillOptions =
+    (resumeValues.skillsStyle !== undefined &&
+      resumeValues.skillsStyle !==
+        parseSkillStyle(existingResume?.skillsStyle)) ||
+    (skillLevels !== undefined &&
+      !sameSkillLevels(
+        skillLevels,
+        parseSkillLevels(existingResume?.skillLevels),
+      ));
+
+  const changesPageStyle =
+    (resumeValues.pageBackground !== undefined &&
+      resumeValues.pageBackground !==
+        parsePageBackground(existingResume?.pageBackground)) ||
+    (resumeValues.fontPair !== undefined &&
+      resumeValues.fontPair !== parseFontPair(existingResume?.fontPair));
+
   // check if resume has customizations
   const hasCustomizations =
     (resumeValues.borderStyle &&
       resumeValues.borderStyle !== existingResume?.borderStyle) ||
     (resumeValues.colorHex &&
-      resumeValues.colorHex !== existingResume?.colorHex);
+      resumeValues.colorHex !== existingResume?.colorHex) ||
+    changesPhotoOptions ||
+    changesSkillOptions ||
+    changesPageStyle;
 
   // check user has customizations for subscription level
   if (hasCustomizations && !canUseCustomizations(subscriptionLevel)) {
@@ -181,6 +226,7 @@ export async function saveResume(values: ResumeValues) {
       where: { id },
       data: {
         ...resumeValues,
+        skillLevels,
         photoUrl: newPhotoUrl,
         workExperiences: { deleteMany: {}, create: sectionRows.workExperiences },
         educations: { deleteMany: {}, create: sectionRows.educations },
@@ -195,6 +241,7 @@ export async function saveResume(values: ResumeValues) {
     return prisma.resume.create({
       data: {
         ...resumeValues,
+        skillLevels,
         userId,
         photoUrl: newPhotoUrl,
         workExperiences: { create: sectionRows.workExperiences },

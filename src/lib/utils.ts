@@ -1,6 +1,17 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { parseStoredBullets } from "./bullets";
+import { parseFontPair, parsePageBackground } from "./page-style";
+import {
+  isPhotoShape,
+  parsePhotoPosition,
+  parsePhotoSize,
+} from "./photo-options";
+import {
+  parseSkillLevels,
+  parseSkillStyle,
+  pruneSkillLevels,
+} from "./skill-options";
 import { parseTemplate } from "./templates";
 import { ResumeServerData } from "./types";
 import {
@@ -88,7 +99,17 @@ export function mapToResumeValues(data: ResumeServerData): ResumeValues {
       hidden: project.hidden,
     })),
     skills: data.skills,
+    skillsStyle: parseSkillStyle(data.skillsStyle),
+    skillLevels: pruneSkillLevels(
+      parseSkillLevels(data.skillLevels),
+      data.skills,
+    ),
+    pageBackground: parsePageBackground(data.pageBackground),
+    fontPair: parseFontPair(data.fontPair),
     borderStyle: data.borderStyle,
+    photoShape: isPhotoShape(data.photoShape) ? data.photoShape : undefined,
+    photoPosition: parsePhotoPosition(data.photoPosition),
+    photoSize: parsePhotoSize(data.photoSize),
     colorHex: data.colorHex,
     template: parseTemplate(data.template),
     summary: data.summary || undefined,

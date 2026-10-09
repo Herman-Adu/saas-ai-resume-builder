@@ -23,6 +23,11 @@ model Resume {
   photoUrl    String?
   colorHex    String  @default("#000000")
   borderStyle String  @default("squircle")
+  // Photo options. A null shape follows borderStyle, so older resumes are
+  // unchanged. Values are checked against src/lib/photo-options.ts.
+  photoShape    String?
+  photoPosition String  @default("left")
+  photoSize     String  @default("medium")
   // Checked against src/lib/templates.ts, not a database enum, so adding a
   // template never needs a migration.
   template    String  @default("classic")
@@ -55,6 +60,16 @@ model Resume {
   languages       Language[]
   projects        Project[]
   skills          String[]
+  // Optional level (0 to 100) per skill name, and how the skills are drawn.
+  // Checked against src/lib/skill-options.ts; an empty map and "chips" look
+  // exactly like a resume saved before these columns existed.
+  skillLevels     Json    @default("{}")
+  skillsStyle     String  @default("chips")
+  // Page background and font pairing, checked against src/lib/page-style.ts.
+  // "plain" and "default" look exactly like a resume saved before these
+  // columns existed.
+  pageBackground  String  @default("plain")
+  fontPair        String  @default("default")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

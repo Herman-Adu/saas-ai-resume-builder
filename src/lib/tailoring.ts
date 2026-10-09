@@ -1,5 +1,6 @@
 import type { Prisma } from "../../generated/client";
 import { parseStoredBullets, visibleBullets } from "./bullets";
+import { parseSkillLevels } from "./skill-options";
 import type { ResumeServerData } from "./types";
 import { hideableSections, type ResumeValues } from "./validation";
 
@@ -56,6 +57,9 @@ export function buildTailoredCopy(
     photoUrl: source.photoUrl,
     colorHex: source.colorHex,
     borderStyle: source.borderStyle,
+    photoShape: source.photoShape,
+    photoPosition: source.photoPosition,
+    photoSize: source.photoSize,
     template: source.template,
     summary: source.summary,
     firstName: source.firstName,
@@ -66,6 +70,10 @@ export function buildTailoredCopy(
     phone: source.phone,
     email: source.email,
     skills: [...source.skills],
+    skillsStyle: source.skillsStyle,
+    pageBackground: source.pageBackground,
+    fontPair: source.fontPair,
+    skillLevels: parseSkillLevels(source.skillLevels),
     hiddenSections: [...source.hiddenSections],
     isMaster: false,
     isTailored: true,
