@@ -2,6 +2,7 @@ import ResumePreview from "@/components/ResumePreview";
 import { ResumeValues } from "@/lib/validation";
 import BorderStyleButton from "./BorderStyleButton";
 import ColorPicker from "./ColorPicker";
+import LooksButton from "./LooksButton";
 import PageStyleButton from "./PageStyleButton";
 import PhotoOptionsButton from "./PhotoOptionsButton";
 import SkillStyleButton from "./SkillStyleButton";
@@ -39,6 +40,10 @@ export default function ResumePreviewSection({
           onChange={(borderStyle) =>
             setResumeData({ ...resumeData, borderStyle })
           }
+        />
+        <LooksButton
+          resumeData={resumeData}
+          onChange={(changes) => setResumeData({ ...resumeData, ...changes })}
         />
         <PhotoOptionsButton
           resumeData={resumeData}
