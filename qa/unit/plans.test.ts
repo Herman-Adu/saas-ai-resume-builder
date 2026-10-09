@@ -56,10 +56,19 @@ describe("planFeatures", () => {
     expect(byId("pro_plus").join(" ")).toMatch(/import your CV/i);
   });
 
+  it("only promises AI job tailoring from pro up, because it runs the AI", () => {
+    expect(byId("free").join(" ")).not.toMatch(/job post/i);
+    expect(byId("pro").join(" ")).toMatch(/job post/i);
+    expect(byId("pro_plus").join(" ")).toMatch(/job post/i);
+    expect(byId("free").join(" ")).not.toMatch(/cover letter/i);
+    expect(byId("pro").join(" ")).toMatch(/cover letter/i);
+    expect(byId("pro_plus").join(" ")).toMatch(/cover letter/i);
+  });
+
   it.each(plans)(
-    "$id promises all four templates only if permissions.ts allows them",
+    "$id promises every template only if permissions.ts allows them",
     (plan) => {
-      const promised = /all four templates/i.test(planFeatures(plan).join(" "));
+      const promised = /all 10 templates/i.test(planFeatures(plan).join(" "));
       expect(promised).toBe(canUseTemplate(plan.id, "modern"));
     },
   );

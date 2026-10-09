@@ -5,7 +5,7 @@ description: Run one sprint end to end on this repo - orient, branch from the re
 
 # Sprint workflow
 
-One sprint = one branch = one PR = one ledger row. Scope comes from the active plan in `v0_plans/`. This skill runs the loop; other skills do the work inside it.
+One sprint = one commit = one ledger row. A batch of up to three sprints shares one branch and one PR, because every push to a PR branch runs CI and a Vercel preview. Scope comes from the active plan in `v0_plans/`. This skill runs the loop; other skills do the work inside it.
 
 ## 0. Orient (every start or resume)
 
@@ -21,8 +21,10 @@ Why: the workspace can be switched to a fresh branch from `main` between turns, 
 
 ```bash
 git fetch origin +refs/heads/main:refs/remotes/origin/main
-git checkout -B v0/<sprint-id>-<short-name> origin/main
+git checkout -B v0/batch-<first-id>-<last-id> origin/main
 ```
+
+Later sprints in the batch continue on the same branch; don't branch again.
 
 A plain `git fetch origin main` only moves `FETCH_HEAD`; branching from a stale `origin/main` silently reverts merged work.
 
@@ -30,9 +32,9 @@ A plain `git fetch origin main` only moves `FETCH_HEAD`; branching from a stale 
 
 Follow `.agents/skills/test-first/`. While coding, apply only the skills the change touches: `react-next-patterns`, `typescript-clean-code`, `feature-slices`, `db-schema-change`, `auth-ops`.
 
-Long sprint? Commit work in progress on the sprint branch, but only push it once the checks below are green.
+Commit each finished sprint as its own commit on the batch branch. Don't push mid-batch.
 
-## 3. Checks (all green before any push)
+## 3. Checks (run after every sprint; all green before any push)
 
 ```bash
 npm run check                         # typecheck + lint + unit (Vitest)
@@ -48,13 +50,13 @@ Update the ledger, `README.md` when setup or scripts change, and add an ADR in `
 ## 5. Ship
 
 ```bash
-git diff --stat origin/main    # only this sprint's files; anything else = stale base, stop and fix
+git diff --stat origin/main    # only this batch's files; anything else = stale base, stop and fix
 ```
 
-1. Commit: `<SPRINT>: <outcome> (<key parts>)`. Push the sprint branch.
-2. `gh pr create --base main --title "<SPRINT>: ..." --body` with: what, why, tests run, data impact.
-3. Wait for every check to be green: CI (`checks` + `app` jobs, once Sprint 0 adds them) and the Vercel preview build (`gh pr checks <n> --watch`). Red = fix on the branch, rerun local checks, push again.
-4. `gh pr merge <n> --squash --delete-branch`.
+1. Commit per sprint: `<SPRINT>: <outcome> (<key parts>)`. Push once, when the batch is done and the full local gates are green on the final tree.
+2. `gh pr create --base main --title "<SPRINTS>: ..." --body` with: what per sprint, why, tests run, data impact.
+3. Wait for every check to be green: CI (`checks` + `app` jobs) and the Vercel preview build (`gh pr checks <n> --watch`). Red = fix on the branch, rerun local checks, push again (each push costs a CI run).
+4. `gh pr merge <n> --merge --delete-branch` (a merge commit keeps the sprint commits; the ruleset allows it).
 
 Merging to `main` does not mean going live: promoting to production is a separate gated step (`vercel-ops`).
 

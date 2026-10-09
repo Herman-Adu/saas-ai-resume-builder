@@ -7,7 +7,7 @@ import TemplateShowcase from "./TemplateShowcase";
 export const metadata: Metadata = {
   title: "Resume templates",
   description:
-    "Browse four clean CV templates filled with example content, including an ATS-friendly layout. Pick one and start your own in minutes.",
+    "Browse ten professional CV templates filled with example content, from executive to graduate to ATS-friendly. Pick one and start your own in minutes.",
   alternates: { canonical: "/templates" },
 };
 

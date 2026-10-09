@@ -1,9 +1,20 @@
 import { expect, test } from "@playwright/test";
 
-const templates = ["classic", "modern", "compact", "minimal"];
+const templates = [
+  "classic",
+  "modern",
+  "compact",
+  "minimal",
+  "executive",
+  "creative",
+  "graduate",
+  "academic",
+  "tech",
+  "elegant",
+];
 
 test.describe("template gallery (signed out)", () => {
-  test("is public and shows all four templates with sample CVs", async ({
+  test("is public and shows all ten templates with sample CVs", async ({
     page,
   }) => {
     const response = await page.goto("/templates");

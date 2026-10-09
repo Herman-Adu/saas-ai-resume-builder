@@ -13,10 +13,12 @@ Paste these into the product pages in the Stripe dashboard (Product catalogue > 
 - Up to 3 resumes
 - Live preview and autosave
 - Print-ready PDF export
-- All four templates, including an ATS-safe one
+- All 10 templates, including an ATS-safe one
 - Tailor to each job, up to 10 tailored resumes
 - AI-written summary and work experience
 - Import your CV from a PDF
+- Tailor to a pasted job post with AI suggestions you approve
+- AI cover letter for each tailored resume, editable and printable
 
 ## Pro Plus
 
@@ -29,10 +31,12 @@ Paste these into the product pages in the Stripe dashboard (Product catalogue > 
 - Unlimited resumes
 - Live preview and autosave
 - Print-ready PDF export
-- All four templates, including an ATS-safe one
+- All 10 templates, including an ATS-safe one
 - Tailor to each job, unlimited tailored resumes
 - AI-written summary and work experience
 - Import your CV from a PDF
+- Tailor to a pasted job post with AI suggestions you approve
+- AI cover letter for each tailored resume, editable and printable
 - Colour and border customisation
 
 ## Free

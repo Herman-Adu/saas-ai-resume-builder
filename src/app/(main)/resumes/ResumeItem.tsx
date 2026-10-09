@@ -21,7 +21,7 @@ import { useReactToPrint } from "react-to-print";
 import { formatDate } from "date-fns";
 import Link from "next/link";
 import { useRef, useState, useTransition } from "react";
-import { MoreVertical, Printer, Star, Trash2 } from "lucide-react";
+import { FileText, MoreVertical, Printer, Star, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -82,6 +82,7 @@ export default function ResumeItem({ resume }: ResumeItemProps) {
       <MoreMenu
         resumeId={resume.id}
         canBeMaster={!resume.isMaster && !resume.isTailored}
+        hasJob={Boolean(resume.jobId)}
         onPrintClick={reactToPrintFn}
       />
     </div>
@@ -91,10 +92,16 @@ export default function ResumeItem({ resume }: ResumeItemProps) {
 interface MoreMenuProps {
   resumeId: string;
   canBeMaster: boolean;
+  hasJob: boolean;
   onPrintClick: () => void;
 }
 
-function MoreMenu({ resumeId, canBeMaster, onPrintClick }: MoreMenuProps) {
+function MoreMenu({
+  resumeId,
+  canBeMaster,
+  hasJob,
+  onPrintClick,
+}: MoreMenuProps) {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const { toast } = useToast();
   const [, startTransition] = useTransition();
@@ -135,6 +142,17 @@ function MoreMenu({ resumeId, canBeMaster, onPrintClick }: MoreMenuProps) {
             >
               <Star className="size-4" />
               Mark as master
+            </DropdownMenuItem>
+          )}
+          {hasJob && (
+            <DropdownMenuItem asChild>
+              <Link
+                href={`/resumes/${resumeId}/cover-letter`}
+                className="flex items-center gap-2"
+              >
+                <FileText className="size-4" />
+                Cover letter
+              </Link>
             </DropdownMenuItem>
           )}
           <DropdownMenuItem

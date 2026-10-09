@@ -44,6 +44,10 @@ model Resume {
   // Whole sections left out of the preview and PDF (see src/lib/tailoring.ts).
   hiddenSections String[] @default([])
 
+  // The job post this copy was tailored to, if any. Deleting the job keeps the copy.
+  jobId String?
+  job   Job?    @relation(fields: [jobId], references: [id], onDelete: SetNull)
+
   workExperiences WorkExperience[]
   educations      Education[]
   links           ResumeLink[]
@@ -184,6 +188,57 @@ model CvImport {
 
   @@index([userId, createdAt])
   @@map("cv_imports")
+}
+
+// A job post the user tailored a resume to. Saved only when they accept changes.
+model Job {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String?
+  company   String?
+  postText  String
+  createdAt DateTime @default(now())
+
+  resumes     Resume[]
+  coverLetter CoverLetter?
+
+  @@index([userId, createdAt])
+  @@map("jobs")
+}
+
+// The cover letter for a job, so the tailored CV and the letter stay together.
+model CoverLetter {
+  id        String   @id @default(cuid())
+  userId    String
+  jobId     String   @unique
+  body      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  job Job @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("cover_letters")
+}
+
+// One row per cover letter AI run, for the daily limit. Holds no CV or job text.
+model CoverLetterRun {
+  id        String   @id @default(cuid())
+  userId    String
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@map("cover_letter_runs")
+}
+
+// One row per "tailor to a job" AI run, for the daily limit. Holds no CV or job text.
+model TailorRun {
+  id        String   @id @default(cuid())
+  userId    String
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@map("tailor_runs")
 }
 
 model UserSubscription {
