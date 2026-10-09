@@ -121,6 +121,27 @@ export function startingTemplate(
 }
 
 // only pro plus members can use customizations
+// The mentor brief sends the stored job post and CV and returns a long answer,
+// so it is Pro Plus only and capped a day for AI cost.
+export const mentorBriefDailyLimits: Record<SubscriptionLevel, number> = {
+  free: 0,
+  pro: 0,
+  pro_plus: 10,
+};
+
+export function canWriteMentorBrief(subscriptionLevel: SubscriptionLevel) {
+  return (
+    subscriptionLevel === "pro_plus" && canTailorToJob(subscriptionLevel)
+  );
+}
+
+export function canWriteMentorBriefToday(
+  subscriptionLevel: SubscriptionLevel,
+  runsInLastDay: number,
+) {
+  return runsInLastDay < mentorBriefDailyLimits[subscriptionLevel];
+}
+
 export function canUseCustomizations(subscriptionLevel: SubscriptionLevel) {
   return subscriptionLevel === "pro_plus";
 }

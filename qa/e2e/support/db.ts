@@ -54,6 +54,7 @@ interface SeedJob {
   company: string;
   postText: string;
   coverLetter?: string;
+  mentorBrief?: { roleTests: string[]; cvGaps: string[]; brushUp: string[] };
 }
 
 interface SeedResume {
@@ -81,6 +82,14 @@ async function seedJob(userId: string, job: SeedJob): Promise<string> {
       `INSERT INTO cover_letters (id, "userId", "jobId", body, "updatedAt")
        VALUES ($1, $2, $3, $4, now())`,
       [randomUUID(), userId, jobId, job.coverLetter],
+    );
+  }
+
+  if (job.mentorBrief) {
+    await db.query(
+      `INSERT INTO mentor_briefs (id, "userId", "jobId", content, "updatedAt")
+       VALUES ($1, $2, $3, $4::jsonb, now())`,
+      [randomUUID(), userId, jobId, JSON.stringify(job.mentorBrief)],
     );
   }
 
