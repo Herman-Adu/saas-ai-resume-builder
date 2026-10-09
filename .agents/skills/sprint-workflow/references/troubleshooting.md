@@ -50,5 +50,11 @@ The tool timeout ends the call and the CI run is fine. Poll instead: `for i in $
 ## `gh` says "To get started with GitHub CLI, please run: gh auth login"
 `gh` worked earlier in the same session but a later call has no token (seen in S12 on `gh pr checks`). It is not a real logout: rerun the same command with the Bash tool's `networkProviders: ["github"]` so the sandbox supplies the credentials. Never ask the user to log in.
 
+## CI `app` job fails on a test that passes locally
+Seen in S13: a smoke test failed in CI on a docs-only branch and passed on a rerun of the identical tree. Do this in order: read the failing step in the `app` log, reproduce with the production-build steps above, and if it passes locally the sandbox cannot rerun the job (no permission). Push an empty commit (`git commit --allow-empty`, then `SyncGit`) to start a fresh run, and merge only when that run is fully green. If the same test fails twice, it is a real defect: stop, fix it in the sprint, and add a CI artifact upload for the Playwright trace so the next failure can be read.
+
+## `origin/main` looks stale after merging a PR
+`git fetch origin` aborts when a remote branch was deleted (`couldn't find remote ref`) and leaves `origin/main` behind, so `main` appears to lack the merge. Ask GitHub (`gh api repos/<org>/<repo>/branches/main --jq .commit.sha`), then `git fetch origin +refs/heads/main:refs/remotes/origin/main` and `git reset --hard origin/main`.
+
 ## A reload test loses data that was just typed
 Autosave is debounced, and a fixed `page.waitForTimeout` can end before the save lands (a cold dev compile makes it slower). Wait for the save request itself with `page.waitForResponse` (POST to `/editor`), then reload.
