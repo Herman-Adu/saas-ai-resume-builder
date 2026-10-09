@@ -50,9 +50,13 @@ test.describe("home (signed out)", () => {
       ).toBeVisible();
     }
 
-    await expect(pricing.getByText("Up to 3 resumes")).toBeVisible();
+    // Role queries skip the hidden copy Next streams in before the page swaps it, so these retry
+    // instead of failing a strict-mode check on a slow CI run.
     await expect(
-      pricing.getByText("Unlimited resumes", { exact: true }),
+      pricing.getByRole("listitem").filter({ hasText: "Up to 3 resumes" }),
+    ).toBeVisible();
+    await expect(
+      pricing.getByRole("listitem").filter({ hasText: /^Unlimited resumes$/ }),
     ).toBeVisible();
     await expect(pricing.getByRole("link", { name: /^get /i })).toHaveCount(3);
     for (const link of await pricing
