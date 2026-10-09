@@ -57,7 +57,7 @@ export default function LooksButton({ resumeData, onChange }: LooksButtonProps) 
               }}
             >
               <span className="text-sm font-medium">{look.label}</span>
-              <span className="text-xs font-normal opacity-80">
+              <span className="text-xs font-normal">
                 {look.description}
               </span>
             </Button>
