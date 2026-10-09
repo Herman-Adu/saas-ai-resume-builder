@@ -25,7 +25,7 @@ Read this file, then open **only** the skill that matches the task. Skills link 
 
 ## Non-negotiables
 
-1. **Never commit to `main`.** One sprint = one `v0/<id>-<name>` branch = one PR = squash-merge. Branch from the real `main`.
+1. **Never commit to `main`.** Sprints ship in a batch of up to three sprints: one `v0/batch-<ids>` branch, one commit per sprint, one PR per batch, merged with a merge commit so the sprint commits stay. A risky migration gets a batch of its own. Branch from the real `main`.
 2. **Test first.** Write the failing test, see it fail for the right reason, then implement.
 3. **Green before every push:** `npm run check` (typecheck, lint, unit), plus the browser tests (smoke + axe + seo + authed). A failure gets fixed in the same sprint; never push or merge red.
 4. **After merge:** refresh `main`, confirm it points at the merge commit, update the ledger in `docs/next-steps.md`.
