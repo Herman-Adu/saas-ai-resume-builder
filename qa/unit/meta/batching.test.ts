@@ -27,3 +27,21 @@ describe("sprint batching rule", () => {
     expect(skill).toMatch(/push once/i);
   });
 });
+
+// Ledger rows used to ride with the next sprint's PR, so every new batch
+// started with unwritten docs and an unrun retro (the S18 to S20 hangover).
+describe("batch close-out rule", () => {
+  const skill = read(".agents/skills/sprint-workflow/SKILL.md");
+
+  it("writes the ledger rows and the retro inside the batch PR", () => {
+    expect(skill).toMatch(/ledger rows? .*(before|in) the (push|batch PR)/i);
+    expect(skill).not.toMatch(/rides with the next sprint/i);
+  });
+
+  it("ends every batch with a clean-state check and a next-batch proposal", () => {
+    expect(skill).toMatch(/Batch close-out/);
+    expect(skill).toMatch(/git branch -a/);
+    expect(skill).toMatch(/next batch/i);
+    expect(skill).toMatch(/confirmed/i);
+  });
+});

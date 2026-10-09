@@ -59,5 +59,14 @@ Seen in S13: a smoke test failed in CI on a docs-only branch and passed on a rer
 ## A reload test loses data that was just typed
 Autosave is debounced, and a fixed `page.waitForTimeout` can end before the save lands (a cold dev compile makes it slower). Wait for the save request itself with `page.waitForResponse` (POST to `/editor`), then reload.
 
+## Migration SQL fails with `relation "Resume" does not exist`
+Prisma models can be mapped to other table names (`Resume` is the table `resumes`). Read the model's `@@map` in `prisma/schema.prisma` before writing SQL. If the apply fails, nothing is applied: `prisma migrate resolve --rolled-back <name>`, fix the SQL, then `migrate deploy` again (seen in S18).
+
+## A seed helper writes `null` into a column that has a default
+`INSERT ... VALUES (null)` overrides the column default and fails a NOT NULL. In `qa/e2e/support/db.ts` use `COALESCE($n, <default>)` for optional seed values (seen in S19).
+
+## CI-only failure: a text assertion matches two elements in `#pricing`
+Seen in S13 and again in S18 to S20, mobile project only: streamed copy briefly exists twice while the page hydrates, so `getByText` is strict-mode ambiguous. Assert with `getByRole` (it skips hidden nodes) and never `getByText` for plan copy. CI now uploads the Playwright traces for a failed run (`gh run download <id> -R <org>/<repo> -D <fresh dir>`, read `trace.zip` and the page snapshot); use that before guessing.
+
 ## A page 404s right after its save action runs
 A server action that calls `revalidatePath` for the page the user is editing can make that page render a 404 in the browser test (the save itself succeeded and the toast appeared). Have the action return the saved data and let the client keep it in state; revalidate only other pages that list the data. Check the failing screenshot for a 404 body before assuming the save broke.

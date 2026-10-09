@@ -43,9 +43,9 @@ npm run test:smoke && npm run test:axe && npm run test:seo && npm run test:authe
 
 Add `npm run build` when config, dependencies or deploy are touched. The package manager is **npm** with `--legacy-peer-deps` (it matches the Vercel install command); don't switch to pnpm or commit another lockfile. If anything fails, fix it in this sprint and rerun. Never push or merge red; never skip a check silently. If the sandbox blocks a check (e.g. port busy), see [troubleshooting](references/troubleshooting.md), make one recovery attempt, then stop and report it as blocked.
 
-## 4. Docs
+## 4. Docs and retro (inside the batch, before the push)
 
-Update the ledger, `README.md` when setup or scripts change, and add an ADR in `docs/adr/` for any decision that's hard to reverse.
+Write one ledger row per sprint with the PR number (next number = highest PR number in `gh pr list --state all --limit 1` plus one; check it after opening and fix before merge). Update the ledger header and the "Next" table, run `.agents/skills/sprint-retro/`, update `README.md` when setup or scripts change, and add an ADR in `docs/adr/` for any decision that's hard to reverse. Ledger rows ship in the batch PR, never in the next one, because docs left for the next batch make every start a clean-up (the S18 to S20 hangover).
 
 ## 5. Ship
 
@@ -60,13 +60,17 @@ git diff --stat origin/main    # only this batch's files; anything else = stale 
 
 Merging to `main` does not mean going live: promoting to production is a separate gated step (`vercel-ops`).
 
-## 6. Close out and set up the next sprint
+## 6. Batch close-out (last step of every batch)
 
 ```bash
-git fetch origin +refs/heads/main:refs/remotes/origin/main && git log --oneline -1 origin/main
+git fetch origin +refs/heads/main:refs/remotes/origin/main --prune && git log --oneline -1 origin/main
+git branch -D <batch-branch>; git push origin --delete <batch-branch>   # skip what `--delete-branch` already removed
+git status --short && git branch -a
 ```
 
-Confirm `main` points at the merge commit. Run `.agents/skills/sprint-retro/`. Add the ledger row (it rides with the next sprint's PR). Then go back to step 1 for the next sprint.
+1. `main` points at the merge commit; the tree is clean; `git branch -a` shows only `main` and the chat's own working branch. Nothing from this batch may be left for the next one. If something is, fix it now or write it in the ledger's "Known gaps" with an owner.
+2. Tell the user what shipped, the test counts and the clean-state output.
+3. Propose the next batch: up to three sprints from the ledger's "Next" table, each with outcome, data impact, gate and a recommendation on every decision. Stop and wait for "confirmed". The plan file for it is saved in the next batch's first commit.
 
 ## Gates: stop and ask
 
