@@ -49,22 +49,59 @@ interface SeedWorkExperience {
   bullets: { text: string; hidden: boolean }[];
 }
 
+interface SeedJob {
+  title: string;
+  company: string;
+  postText: string;
+  coverLetter?: string;
+}
+
 interface SeedResume {
   title: string;
   isMaster?: boolean;
   isTailored?: boolean;
+  job?: SeedJob;
   workExperiences?: SeedWorkExperience[];
+}
+
+async function seedJob(userId: string, job: SeedJob): Promise<string> {
+  const jobId = randomUUID();
+  const db = getPool();
+
+  await db.query(
+    `INSERT INTO jobs (id, "userId", title, company, "postText")
+     VALUES ($1, $2, $3, $4, $5)`,
+    [jobId, userId, job.title, job.company, job.postText],
+  );
+
+  if (job.coverLetter) {
+    await db.query(
+      `INSERT INTO cover_letters (id, "userId", "jobId", body, "updatedAt")
+       VALUES ($1, $2, $3, $4, now())`,
+      [randomUUID(), userId, jobId, job.coverLetter],
+    );
+  }
+
+  return jobId;
 }
 
 export async function seedResume(userId: string, resume: SeedResume): Promise<string> {
   const id = randomUUID();
   const db = getPool();
+  const jobId = resume.job ? await seedJob(userId, resume.job) : null;
 
   await db.query(
     `INSERT INTO resumes
-       (id, "userId", title, "isMaster", "isTailored", skills, "updatedAt")
-     VALUES ($1, $2, $3, $4, $5, ARRAY[]::text[], now())`,
-    [id, userId, resume.title, resume.isMaster ?? false, resume.isTailored ?? false],
+       (id, "userId", title, "isMaster", "isTailored", "jobId", skills, "updatedAt")
+     VALUES ($1, $2, $3, $4, $5, $6, ARRAY[]::text[], now())`,
+    [
+      id,
+      userId,
+      resume.title,
+      resume.isMaster ?? false,
+      resume.isTailored ?? Boolean(resume.job),
+      jobId,
+    ],
   );
 
   for (const [index, work] of (resume.workExperiences ?? []).entries()) {
@@ -84,6 +121,8 @@ async function deleteUsersWhere(condition: string, params: unknown[]): Promise<v
   const ids = `SELECT id FROM "user" WHERE ${condition}`;
 
   await db.query(`DELETE FROM resumes WHERE "userId" IN (${ids})`, params);
+  await db.query(`DELETE FROM cover_letter_runs WHERE "userId" IN (${ids})`, params);
+  await db.query(`DELETE FROM jobs WHERE "userId" IN (${ids})`, params);
   await db.query(`DELETE FROM cv_imports WHERE "userId" IN (${ids})`, params);
   await db.query(`DELETE FROM user_subscriptions WHERE "userId" IN (${ids})`, params);
   await db.query(`DELETE FROM "user" WHERE ${condition}`, params);

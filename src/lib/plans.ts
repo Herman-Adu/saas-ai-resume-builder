@@ -67,6 +67,7 @@ export function planFeatures(plan: Plan): string[] {
           "AI-written summary and work experience",
           "Import your CV from a PDF",
           "Tailor to a pasted job post with AI suggestions you approve",
+          "AI cover letter for each tailored resume, editable and printable",
         ]
       : []),
     ...(plan.customizations ? ["Colour and border customisation"] : []),

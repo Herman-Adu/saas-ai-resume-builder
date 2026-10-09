@@ -82,6 +82,24 @@ export function canTailorToJobToday(
   return runsInLastDay < jobTailorDailyLimits[subscriptionLevel];
 }
 
+// Cover letters a day. Capped for the same reason as job tailoring: AI cost.
+export const coverLetterDailyLimits: Record<SubscriptionLevel, number> = {
+  free: 0,
+  pro: 5,
+  pro_plus: 30,
+};
+
+export function canWriteCoverLetter(subscriptionLevel: SubscriptionLevel) {
+  return canTailorToJob(subscriptionLevel);
+}
+
+export function canWriteCoverLetterToday(
+  subscriptionLevel: SubscriptionLevel,
+  runsInLastDay: number,
+) {
+  return runsInLastDay < coverLetterDailyLimits[subscriptionLevel];
+}
+
 // Classic is free for everyone; the other templates need a paid plan.
 export function canUseTemplate(
   subscriptionLevel: SubscriptionLevel,

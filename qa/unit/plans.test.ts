@@ -60,6 +60,9 @@ describe("planFeatures", () => {
     expect(byId("free").join(" ")).not.toMatch(/job post/i);
     expect(byId("pro").join(" ")).toMatch(/job post/i);
     expect(byId("pro_plus").join(" ")).toMatch(/job post/i);
+    expect(byId("free").join(" ")).not.toMatch(/cover letter/i);
+    expect(byId("pro").join(" ")).toMatch(/cover letter/i);
+    expect(byId("pro_plus").join(" ")).toMatch(/cover letter/i);
   });
 
   it.each(plans)(
