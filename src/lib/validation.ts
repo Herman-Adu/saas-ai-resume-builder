@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { bulletSchema } from "./bullets";
+import { photoPositions, photoShapes, photoSizes } from "./photo-options";
 import { resumeTemplates } from "./templates";
 
 export const optionalString = z.string().trim().optional().or(z.literal(""));
@@ -190,6 +191,9 @@ export const resumeSchema = z.object({
   ...summarySchema.shape,
   colorHex: optionalString,
   borderStyle: optionalString,
+  photoShape: z.enum(photoShapes).optional(),
+  photoPosition: z.enum(photoPositions).optional(),
+  photoSize: z.enum(photoSizes).optional(),
   template: z.enum(resumeTemplates).optional(),
   hiddenSections: z.array(z.enum(hideableSections)).optional(),
 });

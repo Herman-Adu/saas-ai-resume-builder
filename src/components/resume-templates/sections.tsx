@@ -3,6 +3,13 @@
 import { BorderStyles } from "@/app/(main)/editor/BorderStyleButton";
 import { Badge } from "@/components/ui/badge";
 import { Bullet, visibleBullets } from "@/lib/bullets";
+import {
+  parsePhotoPosition,
+  parsePhotoShape,
+  parsePhotoSize,
+  photoPixels,
+  photoRadius,
+} from "@/lib/photo-options";
 import { ResumeValues } from "@/lib/validation";
 import { formatDate } from "date-fns";
 import Image from "next/image";
@@ -14,6 +21,9 @@ export interface ResumeSectionProps {
 
 export function Photo({ resumeData }: ResumeSectionProps) {
   const { photo, borderStyle } = resumeData;
+  const shape = parsePhotoShape(resumeData.photoShape, borderStyle);
+  const position = parsePhotoPosition(resumeData.photoPosition);
+  const pixels = photoPixels(parsePhotoSize(resumeData.photoSize));
 
   // Derive the source from the prop; avoid setState-in-effect
   const photoSrc = useMemo(() => {
@@ -34,19 +44,26 @@ export function Photo({ resumeData }: ResumeSectionProps) {
   return (
     <Image
       src={photoSrc}
-      width={100}
-      height={100}
+      width={pixels}
+      height={pixels}
       alt="Author photo"
-      className="aspect-square object-cover"
-      style={{
-        borderRadius:
-          borderStyle === BorderStyles.SQUARE
-            ? "0px"
-            : borderStyle === BorderStyles.CIRCLE
-              ? "9999px"
-              : "10%",
-      }}
+      data-photo-shape={shape}
+      data-photo-position={position}
+      className="aspect-square max-w-full object-cover"
+      style={{ borderRadius: photoRadius(shape) }}
     />
+  );
+}
+
+// Sidebar templates stack the photo above the contact line, so the chosen
+// side aligns it inside the column instead of reordering the layout.
+export function SidebarPhoto({ resumeData }: ResumeSectionProps) {
+  const position = parsePhotoPosition(resumeData.photoPosition);
+
+  return (
+    <div className={position === "right" ? "flex justify-end" : "flex"}>
+      <Photo resumeData={resumeData} />
+    </div>
   );
 }
 
@@ -63,9 +80,16 @@ export function contactLine({
 
 export function PersonalInfoHeader({ resumeData }: ResumeSectionProps) {
   const { firstName, lastName, jobTitle, colorHex } = resumeData;
+  const onRight = parsePhotoPosition(resumeData.photoPosition) === "right";
 
   return (
-    <div className="flex items-center gap-6">
+    <div
+      className={
+        onRight
+          ? "flex flex-row-reverse items-center justify-between gap-6"
+          : "flex items-center gap-6"
+      }
+    >
       <Photo resumeData={resumeData} />
       <div className="space-y-2.5">
         <div className="space-y-1">

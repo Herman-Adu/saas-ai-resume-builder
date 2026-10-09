@@ -2,6 +2,7 @@ import ResumePreview from "@/components/ResumePreview";
 import { ResumeValues } from "@/lib/validation";
 import BorderStyleButton from "./BorderStyleButton";
 import ColorPicker from "./ColorPicker";
+import PhotoOptionsButton from "./PhotoOptionsButton";
 import TemplatePicker from "./TemplatePicker";
 import { cn } from "@/lib/utils";
 
@@ -36,6 +37,10 @@ export default function ResumePreviewSection({
           onChange={(borderStyle) =>
             setResumeData({ ...resumeData, borderStyle })
           }
+        />
+        <PhotoOptionsButton
+          resumeData={resumeData}
+          onChange={(changes) => setResumeData({ ...resumeData, ...changes })}
         />
       </div>
       <div className="flex w-full justify-center overflow-y-auto bg-secondary p-3">

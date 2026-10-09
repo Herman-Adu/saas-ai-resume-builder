@@ -23,6 +23,11 @@ model Resume {
   photoUrl    String?
   colorHex    String  @default("#000000")
   borderStyle String  @default("squircle")
+  // Photo options. A null shape follows borderStyle, so older resumes are
+  // unchanged. Values are checked against src/lib/photo-options.ts.
+  photoShape    String?
+  photoPosition String  @default("left")
+  photoSize     String  @default("medium")
   // Checked against src/lib/templates.ts, not a database enum, so adding a
   // template never needs a migration.
   template    String  @default("classic")

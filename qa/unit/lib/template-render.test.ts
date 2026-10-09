@@ -80,6 +80,63 @@ describe.each(resumeTemplates)("%s template", (template) => {
   });
 });
 
+describe("photo options", () => {
+  function renderWith(template: ResumeTemplate, extra: Partial<ResumeValues>) {
+    return renderToStaticMarkup(
+      createElement(ResumePreview, {
+        resumeData: { ...resume(template), ...extra },
+      }),
+    );
+  }
+
+  const photoTemplates = resumeTemplates.filter(
+    (id) => id !== "minimal" && id !== "academic",
+  );
+
+  it("takes the photo shape from the old border style when none is chosen", () => {
+    const html = renderWith("classic", { borderStyle: "circle" });
+    expect(html).toContain('data-photo-shape="circle"');
+    expect(html).toContain("border-radius:9999px");
+  });
+
+  it("lets the photo shape differ from the skill chip shape", () => {
+    const html = renderWith("classic", {
+      borderStyle: "circle",
+      photoShape: "square",
+    });
+    expect(html).toContain('data-photo-shape="square"');
+    expect(html).toContain("border-radius:0px");
+  });
+
+  it("sizes the photo from the chosen size", () => {
+    expect(renderWith("classic", { photoSize: "large" })).toContain('width="132"');
+    expect(renderWith("classic", { photoSize: "small" })).toContain('width="72"');
+    expect(renderWith("classic", {})).toContain('width="100"');
+  });
+
+  it.each(photoTemplates)("marks the photo side on %s", (template) => {
+    expect(renderWith(template, { photoPosition: "right" })).toContain(
+      'data-photo-position="right"',
+    );
+    expect(renderWith(template, {})).toContain('data-photo-position="left"');
+  });
+
+  it("puts the header photo on the right with a reversed row", () => {
+    expect(renderWith("classic", { photoPosition: "right" })).toContain(
+      "flex-row-reverse",
+    );
+    expect(renderWith("classic", {})).not.toContain("flex-row-reverse");
+  });
+
+  it("still leaves the photo out of Minimal and Academic whatever is chosen", () => {
+    for (const template of ["minimal", "academic"] as const) {
+      expect(
+        renderWith(template, { photoPosition: "right", photoSize: "large" }),
+      ).not.toContain("<img");
+    }
+  });
+});
+
 describe("template differences", () => {
   it("applies the accent colour to every template except Minimal", () => {
     for (const template of resumeTemplates.filter((id) => id !== "minimal")) {

@@ -11,6 +11,7 @@ import {
   PersonalInfoHeader,
   Photo,
   PlainSkillsSection,
+  SidebarPhoto,
   SkillsSection,
   SummarySection,
   WorkExperienceSection,
@@ -40,7 +41,7 @@ function ModernBody({ resumeData }: ResumeSectionProps) {
   return (
     <>
       <aside className="w-[32%] shrink-0 space-y-6">
-        <Photo resumeData={resumeData} />
+        <SidebarPhoto resumeData={resumeData} />
         <p className="text-xs text-gray-500">{contactLine(resumeData)}</p>
         <SkillsSection resumeData={resumeData} />
         <LanguagesSection resumeData={resumeData} />
@@ -115,7 +116,7 @@ function CreativeBody({ resumeData }: ResumeSectionProps) {
         className="w-[32%] shrink-0 space-y-6 rounded-lg p-4"
         style={{ backgroundColor: colorHex ? `${colorHex}1f` : undefined }}
       >
-        <Photo resumeData={resumeData} />
+        <SidebarPhoto resumeData={resumeData} />
         <p className="text-xs text-gray-700">{contactLine(resumeData)}</p>
         <SkillsSection resumeData={resumeData} />
         <LanguagesSection resumeData={resumeData} />
