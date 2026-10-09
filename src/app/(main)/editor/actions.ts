@@ -5,6 +5,7 @@ import {
   canUseCustomizations,
   canUseTemplate,
 } from "@/lib/permissions";
+import { parseFontPair, parsePageBackground } from "@/lib/page-style";
 import { parsePhotoPosition, parsePhotoSize } from "@/lib/photo-options";
 import {
   parseSkillLevels,
@@ -162,6 +163,13 @@ export async function saveResume(values: ResumeValues) {
         parseSkillLevels(existingResume?.skillLevels),
       ));
 
+  const changesPageStyle =
+    (resumeValues.pageBackground !== undefined &&
+      resumeValues.pageBackground !==
+        parsePageBackground(existingResume?.pageBackground)) ||
+    (resumeValues.fontPair !== undefined &&
+      resumeValues.fontPair !== parseFontPair(existingResume?.fontPair));
+
   // check if resume has customizations
   const hasCustomizations =
     (resumeValues.borderStyle &&
@@ -169,7 +177,8 @@ export async function saveResume(values: ResumeValues) {
     (resumeValues.colorHex &&
       resumeValues.colorHex !== existingResume?.colorHex) ||
     changesPhotoOptions ||
-    changesSkillOptions;
+    changesSkillOptions ||
+    changesPageStyle;
 
   // check user has customizations for subscription level
   if (hasCustomizations && !canUseCustomizations(subscriptionLevel)) {

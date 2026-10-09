@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { parseStoredBullets } from "./bullets";
+import { parseFontPair, parsePageBackground } from "./page-style";
 import {
   isPhotoShape,
   parsePhotoPosition,
@@ -103,6 +104,8 @@ export function mapToResumeValues(data: ResumeServerData): ResumeValues {
       parseSkillLevels(data.skillLevels),
       data.skills,
     ),
+    pageBackground: parsePageBackground(data.pageBackground),
+    fontPair: parseFontPair(data.fontPair),
     borderStyle: data.borderStyle,
     photoShape: isPhotoShape(data.photoShape) ? data.photoShape : undefined,
     photoPosition: parsePhotoPosition(data.photoPosition),

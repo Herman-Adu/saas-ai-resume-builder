@@ -71,6 +71,8 @@ export function buildTailoredCopy(
     email: source.email,
     skills: [...source.skills],
     skillsStyle: source.skillsStyle,
+    pageBackground: source.pageBackground,
+    fontPair: source.fontPair,
     skillLevels: parseSkillLevels(source.skillLevels),
     hiddenSections: [...source.hiddenSections],
     isMaster: false,

@@ -65,6 +65,11 @@ model Resume {
   // exactly like a resume saved before these columns existed.
   skillLevels     Json    @default("{}")
   skillsStyle     String  @default("chips")
+  // Page background and font pairing, checked against src/lib/page-style.ts.
+  // "plain" and "default" look exactly like a resume saved before these
+  // columns existed.
+  pageBackground  String  @default("plain")
+  fontPair        String  @default("default")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
