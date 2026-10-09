@@ -58,3 +58,6 @@ Seen in S13: a smoke test failed in CI on a docs-only branch and passed on a rer
 
 ## A reload test loses data that was just typed
 Autosave is debounced, and a fixed `page.waitForTimeout` can end before the save lands (a cold dev compile makes it slower). Wait for the save request itself with `page.waitForResponse` (POST to `/editor`), then reload.
+
+## A page 404s right after its save action runs
+A server action that calls `revalidatePath` for the page the user is editing can make that page render a 404 in the browser test (the save itself succeeded and the toast appeared). Have the action return the saved data and let the client keep it in state; revalidate only other pages that list the data. Check the failing screenshot for a 404 body before assuming the save broke.
