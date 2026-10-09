@@ -4,6 +4,7 @@ import { NextResponse, type NextRequest } from "next/server";
 const publicPaths = [
   "/",
   "/tos",
+  "/templates",
   "/sign-in",
   "/sign-up",
   "/sitemap.xml",

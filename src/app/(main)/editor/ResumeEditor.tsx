@@ -11,16 +11,25 @@ import { cn, mapToResumeValues } from "@/lib/utils";
 import useUnloadWarning from "@/hooks/useUnloadWarning";
 import useAutoSaveResume from "./useAutoSaveResume";
 import { ResumeServerData } from "@/lib/types";
+import type { ResumeTemplate } from "@/lib/templates";
 
 interface ResumeEditorProps {
   resumeToEdit: ResumeServerData | null;
+  initialTemplate?: ResumeTemplate;
 }
 
-export default function ResumeEditor({ resumeToEdit }: ResumeEditorProps) {
+export default function ResumeEditor({
+  resumeToEdit,
+  initialTemplate,
+}: ResumeEditorProps) {
   const searchParams = useSearchParams();
 
   const [resumeData, setResumeData] = useState<ResumeValues>(
-    resumeToEdit ? mapToResumeValues(resumeToEdit) : {},
+    resumeToEdit
+      ? mapToResumeValues(resumeToEdit)
+      : initialTemplate
+        ? { template: initialTemplate }
+        : {},
   );
 
   const [showSmResumePreview, setShowSmResumePreview] = useState(false);

@@ -8,6 +8,7 @@ test("sitemap.xml lists the public pages", async ({ request }) => {
   const body = await response.text();
   expect(body).toMatch(/<loc>[^<]+\/<\/loc>/);
   expect(body).toMatch(/<loc>[^<]+\/tos<\/loc>/);
+  expect(body).toMatch(/<loc>[^<]+\/templates<\/loc>/);
   expect(body).not.toMatch(/\/(resumes|billing|editor)/);
 });
 

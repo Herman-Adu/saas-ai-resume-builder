@@ -13,6 +13,7 @@ describe("buildSitemap", () => {
   it("lists the public marketing pages", () => {
     expect(urls).toContain("https://example.test/");
     expect(urls).toContain("https://example.test/tos");
+    expect(urls).toContain("https://example.test/templates");
   });
 
   it("never lists signed-in or API routes", () => {

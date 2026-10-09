@@ -7,7 +7,11 @@ import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
-export default function SignUpForm() {
+interface SignUpFormProps {
+  template?: string;
+}
+
+export default function SignUpForm({ template }: SignUpFormProps) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -30,7 +34,7 @@ export default function SignUpForm() {
       return;
     }
 
-    router.push("/resumes");
+    router.push(template ? `/editor?template=${template}` : "/resumes");
     router.refresh();
   }
 

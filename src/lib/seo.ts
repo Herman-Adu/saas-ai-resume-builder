@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import type { PlanPrices } from "./plan-prices";
 import { plans } from "./plans";
 
-const publicPaths = ["/", "/tos"] as const;
+const publicPaths = ["/", "/templates", "/tos"] as const;
 const privatePaths = ["/api/", "/resumes", "/billing", "/editor"];
 
 function origin(baseUrl: string) {
